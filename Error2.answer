@@ -1,0 +1,29 @@
+Lexeme.KW_CLASS
+Lexeme.IDENTIFIER, Main
+Lexeme.SYMBOL_OPEN_BRACE
+Lexeme.KW_FUNCTION
+Lexeme.KW_VOID
+Lexeme.IDENTIFIER, test
+Lexeme.SYMBOL_OPEN_PAREN
+Lexeme.SYMBOL_CLOSE_PAREN
+Lexeme.SYMBOL_OPEN_BRACE
+Lexeme.KW_INT
+Lexeme.IDENTIFIER, i
+Lexeme.SYMBOL_COMMA
+Lexeme.IDENTIFIER, j
+Lexeme.SYMBOL_SEMICOLON
+Lexeme.IDENTIFIER, String
+Lexeme.IDENTIFIER, s
+Lexeme.SYMBOL_SEMICOLON
+Lexeme.IDENTIFIER, Array
+Lexeme.IDENTIFIER, a
+Lexeme.SYMBOL_SEMICOLON
+Lexeme.KW_IF
+Lexeme.SYMBOL_OPEN_PAREN
+Lexeme.KW_FALSE
+Lexeme.SYMBOL_CLOSE_PAREN
+Lexeme.SYMBOL_OPEN_BRACE
+Lexeme.IDENTIFIER, s
+Lexeme.SYMBOL_EQUAL
+Line 11: end-of-file encountered in a string constant
+Lexeme.EOF
