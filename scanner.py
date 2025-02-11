@@ -1,6 +1,6 @@
 """
 Lexical scanner for the Eck programming language
-***INSERT YOUR NAMES HERE***
+Morgan Bauer
 CS420, Spring 2025
 
 """
@@ -34,8 +34,25 @@ class Scanner:
         Input:
             filename        string; path to input file
         """
-        ## REPLACE THE pass STATEMENT WITH YOUR CODE
-        pass
+
+        # Concatenate all lines of the .eck input file as a string
+        self.__file_contents = ''
+        with open(filename, 'r') as infile:
+            lines = infile.readlines()
+            for line in lines:
+                self.__file_contents += line
+
+        # An index to keep track of which character in the file is being read
+        self.__ch_index = 0
+
+    def nextChar(self):
+        """
+        Returns the next character in the input file and increments the
+        Scanner's index counter
+        """
+        ch = self.__file_contents[self.__ch_index]
+        self.__ch_index += 1
+        return ch
 
     def nextLexeme(self):
         """
@@ -43,9 +60,7 @@ class Scanner:
         White space and comments are skipped over.  When the end of file is reached,
         the next lexeme returned should be the pair (Lexeme.EOF, None).
         """
-        ## REPLACE THE pass STATEMENT WITH YOUR CODE
         pass
-
 
 if __name__ == "__main__":
     """
