@@ -1,0 +1,45 @@
+  2class Main
+  3   variable VariableScopes.STATIC DataTypes.BOOLEAN_SCALAR test
+  5   subroutine SubroutineSpecifiers.FUNCTION DataTypes.VOID main
+  6      variable VariableScopes.LOCAL DataTypes.CLASS_SCALAR game
+  7      assignment game
+  7         subroutineCall SquareGame.new
+  8      do
+  8         subroutineCall game.run
+  9      do
+  9         subroutineCall game.dispose
+ 10      return
+ 13   subroutine SubroutineSpecifiers.FUNCTION DataTypes.VOID test
+ 14      variable VariableScopes.LOCAL DataTypes.INT_SCALAR i
+ 14      variable VariableScopes.LOCAL DataTypes.INT_SCALAR j
+ 15      variable VariableScopes.LOCAL DataTypes.CLASS_SCALAR s
+ 16      variable VariableScopes.LOCAL DataTypes.CLASS_SCALAR a
+ 17      if
+ 17         condition
+ 17            constant (<DataTypes.BOOLEAN_SCALAR: 1>, None) False
+ 17         then
+ 18            assignment s
+ 18               constant (<DataTypes.CLASS_SCALAR: 5>, 'String') string constant
+ 19            assignment s
+ 19               constant (<DataTypes.VOID: 9>, None) None
+ 20            assignment a
+ 20               array index
+ 20                  constant (<DataTypes.INT_SCALAR: 6>, None) 1
+ 20               expVar a array index
+ 20                  constant (<DataTypes.INT_SCALAR: 6>, None) 2
+ 17         else
+ 23            assignment i
+ 23               exprBinop Lexeme.SYMBOL_TIMES
+ 23                  expVar i
+ 23                  exprUnop Lexeme.SYMBOL_MINUS
+ 23                     expVar j
+ 24            assignment j
+ 24               exprBinop Lexeme.SYMBOL_DIVIDE
+ 24                  expVar j
+ 24                  exprUnop Lexeme.SYMBOL_MINUS
+ 24                     constant (<DataTypes.INT_SCALAR: 6>, None) 2
+ 25            assignment i
+ 25               exprBinop Lexeme.SYMBOL_OR
+ 25                  expVar i
+ 25                  expVar j
+ 27      return

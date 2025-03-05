@@ -1,0 +1,68 @@
+  2class Main
+  4   subroutine SubroutineSpecifiers.FUNCTION DataTypes.INT_ARRAY f
+  4      variable VariableScopes.PARAMETER DataTypes.INT_ARRAY x
+  4      variable VariableScopes.PARAMETER DataTypes.BOOLEAN_SCALAR y
+  5      variable VariableScopes.LOCAL DataTypes.CHAR_SCALAR c
+  6      variable VariableScopes.LOCAL DataTypes.CHAR_ARRAY cAry
+  6      variable VariableScopes.LOCAL DataTypes.CHAR_ARRAY dAry
+  7      variable VariableScopes.LOCAL DataTypes.BOOLEAN_SCALAR b
+  8      variable VariableScopes.LOCAL DataTypes.BOOLEAN_ARRAY bAry
+ 10      return
+ 13   subroutine SubroutineSpecifiers.FUNCTION DataTypes.VOID main
+ 14      variable VariableScopes.LOCAL DataTypes.INT_ARRAY a
+ 15      variable VariableScopes.LOCAL DataTypes.INT_SCALAR length
+ 16      variable VariableScopes.LOCAL DataTypes.INT_SCALAR i
+ 16      variable VariableScopes.LOCAL DataTypes.INT_SCALAR sum
+ 18      assignment length
+ 18         subroutineCall Keyboard.readInt
+ 18            constant (<DataTypes.CLASS_SCALAR: 5>, 'String') HOW MANY NUMBERS? 
+ 19      assignment a
+ 19         subroutineCall Array.new
+ 19            expVar length
+ 20      assignment i
+ 20         constant (<DataTypes.INT_SCALAR: 6>, None) 0
+ 22      while
+ 22         condition
+ 22            exprBinop Lexeme.SYMBOL_LT
+ 22               expVar i
+ 22               expVar length
+ 22         statements
+ 23            assignment a
+ 23               array index
+ 23                  expVar i
+ 23               subroutineCall Keyboard.readInt
+ 23                  constant (<DataTypes.CLASS_SCALAR: 5>, 'String') ENTER THE NEXT NUMBER: 
+ 24            assignment i
+ 24               exprBinop Lexeme.SYMBOL_PLUS
+ 24                  expVar i
+ 24                  constant (<DataTypes.INT_SCALAR: 6>, None) 1
+ 27      assignment i
+ 27         constant (<DataTypes.INT_SCALAR: 6>, None) 0
+ 28      assignment sum
+ 28         constant (<DataTypes.INT_SCALAR: 6>, None) 0
+ 30      while
+ 30         condition
+ 30            exprBinop Lexeme.SYMBOL_LT
+ 30               expVar i
+ 30               expVar length
+ 30         statements
+ 31            assignment sum
+ 31               exprBinop Lexeme.SYMBOL_PLUS
+ 31                  expVar sum
+ 31                  expVar a array index
+ 31                     expVar i
+ 32            assignment i
+ 32               exprBinop Lexeme.SYMBOL_PLUS
+ 32                  expVar i
+ 32                  constant (<DataTypes.INT_SCALAR: 6>, None) 1
+ 35      do
+ 35         subroutineCall Output.printString
+ 35            constant (<DataTypes.CLASS_SCALAR: 5>, 'String') THE AVERAGE IS: 
+ 36      do
+ 36         subroutineCall Output.printInt
+ 36            exprBinop Lexeme.SYMBOL_DIVIDE
+ 36               expVar sum
+ 36               expVar length
+ 37      do
+ 37         subroutineCall Output.println
+ 39      return

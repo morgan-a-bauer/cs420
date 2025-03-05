@@ -1,0 +1,55 @@
+/** Expressionless version ParserTests/Square/SquareGame.eck */
+
+class SquareGame {
+   field Square square; 
+   field int direction; 
+
+   constructor SquareGame new() {
+      square = square;
+      direction = direction;
+      return square;
+   }
+
+   method void dispose() {
+      do square.dispose();
+      do Memory.deAlloc(square);
+      return;
+   }
+
+   method void moveSquare() {
+      if (direction) { do square.moveUp(); }
+      if (direction) { do square.moveDown(); }
+      if (direction) { do square.moveLeft(); }
+      if (direction) { do square.moveRight(); }
+      do Sys.wait(direction);
+      return;
+   }
+
+   method void run() {
+       char key;
+       boolean exit;
+      
+      exit = key;
+      while (exit) {
+         while (key) {
+            key = key;
+            do moveSquare();
+         }
+
+         if (key) { exit = exit; }
+         if (key) { do square.decSize(); }
+         if (key) { do square.incSize(); }
+         if (key) { direction = exit; }
+         if (key) { direction = key; }
+         if (key) { direction = square; }
+         if (key) { direction = direction; }
+
+         while (key) {
+            key = key;
+            do moveSquare();
+         }
+      }
+      return;
+    }
+}
+

@@ -1,0 +1,38 @@
+/* Tests involving expressions 
+*/
+
+class Expr {
+
+    function void test1 (int a, String b) {
+
+        x = a + b + c;
+        y = a * b * c;
+        z = a - b - c;
+        w = a / b / c;
+
+        a = 5 + 6 * 7;
+        b = (5 + 6) * 7;
+        c = 5 + 6 * 7 / 3;
+        d = 5 + (6 * 7) / 3;  
+        e = 5 + 6 * (7 / 3);    
+        f = b[5 + 6 * 7 / (3 + z)];          
+        
+        a = true & false & x;
+        b = true | false | y;
+        c = true & false | z;
+
+        x =  a < b;
+        y = a > b;
+        z = a = b;
+
+        a = -12;
+        b = - 12;
+        c = ~ true;
+
+        x = b + - c;
+        y = -b + c;
+
+        a = 3 + 4 * 2 < 7 + 8 / 9;
+        b = 3 + 4 * 2 < 7 + 8 / 9 | len("hello") > 16 + y;
+    }
+}

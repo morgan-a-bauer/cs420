@@ -1,0 +1,114 @@
+  3class SquareGame
+  4   variable VariableScopes.FIELD DataTypes.CLASS_SCALAR square
+  5   variable VariableScopes.FIELD DataTypes.INT_SCALAR direction
+  7   subroutine SubroutineSpecifiers.CONSTRUCTOR DataTypes.CLASS_SCALAR new
+  8      assignment square
+  8         expVar square
+  9      assignment direction
+  9         expVar direction
+ 10      return
+ 10         expVar square
+ 13   subroutine SubroutineSpecifiers.METHOD DataTypes.VOID dispose
+ 14      do
+ 14         subroutineCall square.dispose
+ 15      do
+ 15         subroutineCall Memory.deAlloc
+ 15            expVar square
+ 16      return
+ 19   subroutine SubroutineSpecifiers.METHOD DataTypes.VOID moveSquare
+ 20      if
+ 20         condition
+ 20            expVar direction
+ 20         then
+ 20            do
+ 20               subroutineCall square.moveUp
+ 21      if
+ 21         condition
+ 21            expVar direction
+ 21         then
+ 21            do
+ 21               subroutineCall square.moveDown
+ 22      if
+ 22         condition
+ 22            expVar direction
+ 22         then
+ 22            do
+ 22               subroutineCall square.moveLeft
+ 23      if
+ 23         condition
+ 23            expVar direction
+ 23         then
+ 23            do
+ 23               subroutineCall square.moveRight
+ 24      do
+ 24         subroutineCall Sys.wait
+ 24            expVar direction
+ 25      return
+ 28   subroutine SubroutineSpecifiers.METHOD DataTypes.VOID run
+ 29      variable VariableScopes.LOCAL DataTypes.CHAR_SCALAR key
+ 30      variable VariableScopes.LOCAL DataTypes.BOOLEAN_SCALAR exit
+ 32      assignment exit
+ 32         expVar key
+ 33      while
+ 33         condition
+ 33            expVar exit
+ 33         statements
+ 34            while
+ 34               condition
+ 34                  expVar key
+ 34               statements
+ 35                  assignment key
+ 35                     expVar key
+ 36                  do
+ 36                     subroutineCall moveSquare
+ 39            if
+ 39               condition
+ 39                  expVar key
+ 39               then
+ 39                  assignment exit
+ 39                     expVar exit
+ 40            if
+ 40               condition
+ 40                  expVar key
+ 40               then
+ 40                  do
+ 40                     subroutineCall square.decSize
+ 41            if
+ 41               condition
+ 41                  expVar key
+ 41               then
+ 41                  do
+ 41                     subroutineCall square.incSize
+ 42            if
+ 42               condition
+ 42                  expVar key
+ 42               then
+ 42                  assignment direction
+ 42                     expVar exit
+ 43            if
+ 43               condition
+ 43                  expVar key
+ 43               then
+ 43                  assignment direction
+ 43                     expVar key
+ 44            if
+ 44               condition
+ 44                  expVar key
+ 44               then
+ 44                  assignment direction
+ 44                     expVar square
+ 45            if
+ 45               condition
+ 45                  expVar key
+ 45               then
+ 45                  assignment direction
+ 45                     expVar direction
+ 47            while
+ 47               condition
+ 47                  expVar key
+ 47               statements
+ 48                  assignment key
+ 48                     expVar key
+ 49                  do
+ 49                     subroutineCall moveSquare
+ 52      return

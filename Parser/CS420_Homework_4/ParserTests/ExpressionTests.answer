@@ -1,0 +1,155 @@
+  4class Expr
+  6   subroutine SubroutineSpecifiers.FUNCTION DataTypes.VOID test1
+  6      variable VariableScopes.PARAMETER DataTypes.INT_SCALAR a
+  6      variable VariableScopes.PARAMETER DataTypes.CLASS_SCALAR b
+  8      assignment x
+  8         exprBinop Lexeme.SYMBOL_PLUS
+  8            exprBinop Lexeme.SYMBOL_PLUS
+  8               expVar a
+  8               expVar b
+  8            expVar c
+  9      assignment y
+  9         exprBinop Lexeme.SYMBOL_TIMES
+  9            exprBinop Lexeme.SYMBOL_TIMES
+  9               expVar a
+  9               expVar b
+  9            expVar c
+ 10      assignment z
+ 10         exprBinop Lexeme.SYMBOL_MINUS
+ 10            exprBinop Lexeme.SYMBOL_MINUS
+ 10               expVar a
+ 10               expVar b
+ 10            expVar c
+ 11      assignment w
+ 11         exprBinop Lexeme.SYMBOL_DIVIDE
+ 11            exprBinop Lexeme.SYMBOL_DIVIDE
+ 11               expVar a
+ 11               expVar b
+ 11            expVar c
+ 13      assignment a
+ 13         exprBinop Lexeme.SYMBOL_PLUS
+ 13            constant (<DataTypes.INT_SCALAR: 6>, None) 5
+ 13            exprBinop Lexeme.SYMBOL_TIMES
+ 13               constant (<DataTypes.INT_SCALAR: 6>, None) 6
+ 13               constant (<DataTypes.INT_SCALAR: 6>, None) 7
+ 14      assignment b
+ 14         exprBinop Lexeme.SYMBOL_TIMES
+ 14            exprBinop Lexeme.SYMBOL_PLUS
+ 14               constant (<DataTypes.INT_SCALAR: 6>, None) 5
+ 14               constant (<DataTypes.INT_SCALAR: 6>, None) 6
+ 14            constant (<DataTypes.INT_SCALAR: 6>, None) 7
+ 15      assignment c
+ 15         exprBinop Lexeme.SYMBOL_PLUS
+ 15            constant (<DataTypes.INT_SCALAR: 6>, None) 5
+ 15            exprBinop Lexeme.SYMBOL_DIVIDE
+ 15               exprBinop Lexeme.SYMBOL_TIMES
+ 15                  constant (<DataTypes.INT_SCALAR: 6>, None) 6
+ 15                  constant (<DataTypes.INT_SCALAR: 6>, None) 7
+ 15               constant (<DataTypes.INT_SCALAR: 6>, None) 3
+ 16      assignment d
+ 16         exprBinop Lexeme.SYMBOL_PLUS
+ 16            constant (<DataTypes.INT_SCALAR: 6>, None) 5
+ 16            exprBinop Lexeme.SYMBOL_DIVIDE
+ 16               exprBinop Lexeme.SYMBOL_TIMES
+ 16                  constant (<DataTypes.INT_SCALAR: 6>, None) 6
+ 16                  constant (<DataTypes.INT_SCALAR: 6>, None) 7
+ 16               constant (<DataTypes.INT_SCALAR: 6>, None) 3
+ 17      assignment e
+ 17         exprBinop Lexeme.SYMBOL_PLUS
+ 17            constant (<DataTypes.INT_SCALAR: 6>, None) 5
+ 17            exprBinop Lexeme.SYMBOL_TIMES
+ 17               constant (<DataTypes.INT_SCALAR: 6>, None) 6
+ 17               exprBinop Lexeme.SYMBOL_DIVIDE
+ 17                  constant (<DataTypes.INT_SCALAR: 6>, None) 7
+ 17                  constant (<DataTypes.INT_SCALAR: 6>, None) 3
+ 18      assignment f
+ 18         expVar b array index
+ 18            exprBinop Lexeme.SYMBOL_PLUS
+ 18               constant (<DataTypes.INT_SCALAR: 6>, None) 5
+ 18               exprBinop Lexeme.SYMBOL_DIVIDE
+ 18                  exprBinop Lexeme.SYMBOL_TIMES
+ 18                     constant (<DataTypes.INT_SCALAR: 6>, None) 6
+ 18                     constant (<DataTypes.INT_SCALAR: 6>, None) 7
+ 18                  exprBinop Lexeme.SYMBOL_PLUS
+ 18                     constant (<DataTypes.INT_SCALAR: 6>, None) 3
+ 18                     expVar z
+ 20      assignment a
+ 20         exprBinop Lexeme.SYMBOL_AND
+ 20            exprBinop Lexeme.SYMBOL_AND
+ 20               constant (<DataTypes.BOOLEAN_SCALAR: 1>, None) True
+ 20               constant (<DataTypes.BOOLEAN_SCALAR: 1>, None) False
+ 20            expVar x
+ 21      assignment b
+ 21         exprBinop Lexeme.SYMBOL_OR
+ 21            exprBinop Lexeme.SYMBOL_OR
+ 21               constant (<DataTypes.BOOLEAN_SCALAR: 1>, None) True
+ 21               constant (<DataTypes.BOOLEAN_SCALAR: 1>, None) False
+ 21            expVar y
+ 22      assignment c
+ 22         exprBinop Lexeme.SYMBOL_OR
+ 22            exprBinop Lexeme.SYMBOL_AND
+ 22               constant (<DataTypes.BOOLEAN_SCALAR: 1>, None) True
+ 22               constant (<DataTypes.BOOLEAN_SCALAR: 1>, None) False
+ 22            expVar z
+ 24      assignment x
+ 24         exprBinop Lexeme.SYMBOL_LT
+ 24            expVar a
+ 24            expVar b
+ 25      assignment y
+ 25         exprBinop Lexeme.SYMBOL_GT
+ 25            expVar a
+ 25            expVar b
+ 26      assignment z
+ 26         exprBinop Lexeme.SYMBOL_EQUAL
+ 26            expVar a
+ 26            expVar b
+ 28      assignment a
+ 28         exprUnop Lexeme.SYMBOL_MINUS
+ 28            constant (<DataTypes.INT_SCALAR: 6>, None) 12
+ 29      assignment b
+ 29         exprUnop Lexeme.SYMBOL_MINUS
+ 29            constant (<DataTypes.INT_SCALAR: 6>, None) 12
+ 30      assignment c
+ 30         exprUnop Lexeme.SYMBOL_NEGATE
+ 30            constant (<DataTypes.BOOLEAN_SCALAR: 1>, None) True
+ 32      assignment x
+ 32         exprBinop Lexeme.SYMBOL_PLUS
+ 32            expVar b
+ 32            exprUnop Lexeme.SYMBOL_MINUS
+ 32               expVar c
+ 33      assignment y
+ 33         exprBinop Lexeme.SYMBOL_PLUS
+ 33            exprUnop Lexeme.SYMBOL_MINUS
+ 33               expVar b
+ 33            expVar c
+ 35      assignment a
+ 35         exprBinop Lexeme.SYMBOL_LT
+ 35            exprBinop Lexeme.SYMBOL_PLUS
+ 35               constant (<DataTypes.INT_SCALAR: 6>, None) 3
+ 35               exprBinop Lexeme.SYMBOL_TIMES
+ 35                  constant (<DataTypes.INT_SCALAR: 6>, None) 4
+ 35                  constant (<DataTypes.INT_SCALAR: 6>, None) 2
+ 35            exprBinop Lexeme.SYMBOL_PLUS
+ 35               constant (<DataTypes.INT_SCALAR: 6>, None) 7
+ 35               exprBinop Lexeme.SYMBOL_DIVIDE
+ 35                  constant (<DataTypes.INT_SCALAR: 6>, None) 8
+ 35                  constant (<DataTypes.INT_SCALAR: 6>, None) 9
+ 36      assignment b
+ 36         exprBinop Lexeme.SYMBOL_OR
+ 36            exprBinop Lexeme.SYMBOL_LT
+ 36               exprBinop Lexeme.SYMBOL_PLUS
+ 36                  constant (<DataTypes.INT_SCALAR: 6>, None) 3
+ 36                  exprBinop Lexeme.SYMBOL_TIMES
+ 36                     constant (<DataTypes.INT_SCALAR: 6>, None) 4
+ 36                     constant (<DataTypes.INT_SCALAR: 6>, None) 2
+ 36               exprBinop Lexeme.SYMBOL_PLUS
+ 36                  constant (<DataTypes.INT_SCALAR: 6>, None) 7
+ 36                  exprBinop Lexeme.SYMBOL_DIVIDE
+ 36                     constant (<DataTypes.INT_SCALAR: 6>, None) 8
+ 36                     constant (<DataTypes.INT_SCALAR: 6>, None) 9
+ 36            exprBinop Lexeme.SYMBOL_GT
+ 36               subroutineCall len
+ 36                  constant (<DataTypes.CLASS_SCALAR: 5>, 'String') hello
+ 36               exprBinop Lexeme.SYMBOL_PLUS
+ 36                  constant (<DataTypes.INT_SCALAR: 6>, None) 16
+ 36                  expVar y

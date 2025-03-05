@@ -1,0 +1,173 @@
+  3class Square
+  5   variable VariableScopes.FIELD DataTypes.INT_SCALAR x
+  5   variable VariableScopes.FIELD DataTypes.INT_SCALAR y
+  6   variable VariableScopes.FIELD DataTypes.INT_SCALAR size
+  8   subroutine SubroutineSpecifiers.CONSTRUCTOR DataTypes.CLASS_SCALAR new
+  8      variable VariableScopes.PARAMETER DataTypes.INT_SCALAR Ax
+  8      variable VariableScopes.PARAMETER DataTypes.INT_SCALAR Ay
+  8      variable VariableScopes.PARAMETER DataTypes.INT_SCALAR Asize
+  9      assignment x
+  9         expVar Ax
+ 10      assignment y
+ 10         expVar Ay
+ 11      assignment size
+ 11         expVar Asize
+ 12      do
+ 12         subroutineCall draw
+ 13      return
+ 13         constant (<DataTypes.CLASS_SCALAR: 5>, 'Square') Lexeme.KW_THIS
+ 16   subroutine SubroutineSpecifiers.METHOD DataTypes.VOID dispose
+ 17      do
+ 17         subroutineCall Memory.deAlloc
+ 17            constant (<DataTypes.CLASS_SCALAR: 5>, 'Square') Lexeme.KW_THIS
+ 18      return
+ 21   subroutine SubroutineSpecifiers.METHOD DataTypes.VOID draw
+ 22      do
+ 22         subroutineCall Screen.setColor
+ 22            expVar x
+ 23      do
+ 23         subroutineCall Screen.drawRectangle
+ 23            expVar x
+ 23            expVar y
+ 23            expVar x
+ 23            expVar y
+ 24      return
+ 27   subroutine SubroutineSpecifiers.METHOD DataTypes.VOID erase
+ 28      do
+ 28         subroutineCall Screen.setColor
+ 28            expVar x
+ 29      do
+ 29         subroutineCall Screen.drawRectangle
+ 29            expVar x
+ 29            expVar y
+ 29            expVar x
+ 29            expVar y
+ 30      return
+ 33   subroutine SubroutineSpecifiers.METHOD DataTypes.VOID incSize
+ 34      if
+ 34         condition
+ 34            expVar x
+ 34         then
+ 35            do
+ 35               subroutineCall erase
+ 36            assignment size
+ 36               expVar size
+ 37            do
+ 37               subroutineCall draw
+ 39      return
+ 42   subroutine SubroutineSpecifiers.METHOD DataTypes.VOID decSize
+ 43      if
+ 43         condition
+ 43            expVar size
+ 43         then
+ 44            do
+ 44               subroutineCall erase
+ 45            assignment size
+ 45               expVar size
+ 46            do
+ 46               subroutineCall draw
+ 48      return
+ 51   subroutine SubroutineSpecifiers.METHOD DataTypes.VOID moveUp
+ 52      if
+ 52         condition
+ 52            expVar y
+ 52         then
+ 53            do
+ 53               subroutineCall Screen.setColor
+ 53                  expVar x
+ 54            do
+ 54               subroutineCall Screen.drawRectangle
+ 54                  expVar x
+ 54                  expVar y
+ 54                  expVar x
+ 54                  expVar y
+ 55            assignment y
+ 55               expVar y
+ 56            do
+ 56               subroutineCall Screen.setColor
+ 56                  expVar x
+ 57            do
+ 57               subroutineCall Screen.drawRectangle
+ 57                  expVar x
+ 57                  expVar y
+ 57                  expVar x
+ 57                  expVar y
+ 59      return
+ 62   subroutine SubroutineSpecifiers.METHOD DataTypes.VOID moveDown
+ 63      if
+ 63         condition
+ 63            expVar y
+ 63         then
+ 64            do
+ 64               subroutineCall Screen.setColor
+ 64                  expVar x
+ 65            do
+ 65               subroutineCall Screen.drawRectangle
+ 65                  expVar x
+ 65                  expVar y
+ 65                  expVar x
+ 65                  expVar y
+ 66            assignment y
+ 66               expVar y
+ 67            do
+ 67               subroutineCall Screen.setColor
+ 67                  expVar x
+ 68            do
+ 68               subroutineCall Screen.drawRectangle
+ 68                  expVar x
+ 68                  expVar y
+ 68                  expVar x
+ 68                  expVar y
+ 70      return
+ 73   subroutine SubroutineSpecifiers.METHOD DataTypes.VOID moveLeft
+ 74      if
+ 74         condition
+ 74            expVar x
+ 74         then
+ 75            do
+ 75               subroutineCall Screen.setColor
+ 75                  expVar x
+ 76            do
+ 76               subroutineCall Screen.drawRectangle
+ 76                  expVar x
+ 76                  expVar y
+ 76                  expVar x
+ 76                  expVar y
+ 77            assignment x
+ 77               expVar x
+ 78            do
+ 78               subroutineCall Screen.setColor
+ 78                  expVar x
+ 79            do
+ 79               subroutineCall Screen.drawRectangle
+ 79                  expVar x
+ 79                  expVar y
+ 79                  expVar x
+ 79                  expVar y
+ 81      return
+ 84   subroutine SubroutineSpecifiers.METHOD DataTypes.VOID moveRight
+ 85      if
+ 85         condition
+ 85            expVar x
+ 85         then
+ 86            do
+ 86               subroutineCall Screen.setColor
+ 86                  expVar x
+ 87            do
+ 87               subroutineCall Screen.drawRectangle
+ 87                  expVar x
+ 87                  expVar y
+ 87                  expVar x
+ 87                  expVar y
+ 88            assignment x
+ 88               expVar x
+ 89            do
+ 89               subroutineCall Screen.setColor
+ 89                  expVar x
+ 90            do
+ 90               subroutineCall Screen.drawRectangle
+ 90                  expVar x
+ 90                  expVar y
+ 90                  expVar x
+ 90                  expVar y
+ 92      return

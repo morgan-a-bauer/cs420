@@ -1,0 +1,145 @@
+ 12class SquareGame
+ 13   variable VariableScopes.FIELD DataTypes.CLASS_SCALAR square
+ 14   variable VariableScopes.FIELD DataTypes.INT_SCALAR direction
+ 18   subroutine SubroutineSpecifiers.CONSTRUCTOR DataTypes.CLASS_SCALAR new
+ 21      assignment square
+ 21         subroutineCall Square.new
+ 21            constant (<DataTypes.INT_SCALAR: 6>, None) 0
+ 21            constant (<DataTypes.INT_SCALAR: 6>, None) 0
+ 21            constant (<DataTypes.INT_SCALAR: 6>, None) 30
+ 22      assignment direction
+ 22         constant (<DataTypes.INT_SCALAR: 6>, None) 0
+ 23      return
+ 23         constant (<DataTypes.CLASS_SCALAR: 5>, 'SquareGame') Lexeme.KW_THIS
+ 27   subroutine SubroutineSpecifiers.METHOD DataTypes.VOID dispose
+ 28      do
+ 28         subroutineCall square.dispose
+ 29      do
+ 29         subroutineCall Memory.deAlloc
+ 29            constant (<DataTypes.CLASS_SCALAR: 5>, 'SquareGame') Lexeme.KW_THIS
+ 30      return
+ 34   subroutine SubroutineSpecifiers.METHOD DataTypes.VOID moveSquare
+ 35      if
+ 35         condition
+ 35            exprBinop Lexeme.SYMBOL_EQUAL
+ 35               expVar direction
+ 35               constant (<DataTypes.INT_SCALAR: 6>, None) 1
+ 35         then
+ 35            do
+ 35               subroutineCall square.moveUp
+ 36      if
+ 36         condition
+ 36            exprBinop Lexeme.SYMBOL_EQUAL
+ 36               expVar direction
+ 36               constant (<DataTypes.INT_SCALAR: 6>, None) 2
+ 36         then
+ 36            do
+ 36               subroutineCall square.moveDown
+ 37      if
+ 37         condition
+ 37            exprBinop Lexeme.SYMBOL_EQUAL
+ 37               expVar direction
+ 37               constant (<DataTypes.INT_SCALAR: 6>, None) 3
+ 37         then
+ 37            do
+ 37               subroutineCall square.moveLeft
+ 38      if
+ 38         condition
+ 38            exprBinop Lexeme.SYMBOL_EQUAL
+ 38               expVar direction
+ 38               constant (<DataTypes.INT_SCALAR: 6>, None) 4
+ 38         then
+ 38            do
+ 38               subroutineCall square.moveRight
+ 39      do
+ 39         subroutineCall Sys.wait
+ 39            constant (<DataTypes.INT_SCALAR: 6>, None) 5
+ 40      return
+ 44   subroutine SubroutineSpecifiers.METHOD DataTypes.VOID run
+ 45      variable VariableScopes.LOCAL DataTypes.CHAR_SCALAR key
+ 46      variable VariableScopes.LOCAL DataTypes.BOOLEAN_SCALAR exit
+ 47      assignment exit
+ 47         constant (<DataTypes.BOOLEAN_SCALAR: 1>, None) False
+ 49      while
+ 49         condition
+ 49            exprUnop Lexeme.SYMBOL_NEGATE
+ 49               expVar exit
+ 49         statements
+ 51            while
+ 51               condition
+ 51                  exprBinop Lexeme.SYMBOL_EQUAL
+ 51                     expVar key
+ 51                     constant (<DataTypes.INT_SCALAR: 6>, None) 0
+ 51               statements
+ 52                  assignment key
+ 52                     subroutineCall Keyboard.keyPressed
+ 53                  do
+ 53                     subroutineCall moveSquare
+ 55            if
+ 55               condition
+ 55                  exprBinop Lexeme.SYMBOL_EQUAL
+ 55                     expVar key
+ 55                     constant (<DataTypes.INT_SCALAR: 6>, None) 81
+ 55               then
+ 55                  assignment exit
+ 55                     constant (<DataTypes.BOOLEAN_SCALAR: 1>, None) True
+ 56            if
+ 56               condition
+ 56                  exprBinop Lexeme.SYMBOL_EQUAL
+ 56                     expVar key
+ 56                     constant (<DataTypes.INT_SCALAR: 6>, None) 90
+ 56               then
+ 56                  do
+ 56                     subroutineCall square.decSize
+ 57            if
+ 57               condition
+ 57                  exprBinop Lexeme.SYMBOL_EQUAL
+ 57                     expVar key
+ 57                     constant (<DataTypes.INT_SCALAR: 6>, None) 88
+ 57               then
+ 57                  do
+ 57                     subroutineCall square.incSize
+ 58            if
+ 58               condition
+ 58                  exprBinop Lexeme.SYMBOL_EQUAL
+ 58                     expVar key
+ 58                     constant (<DataTypes.INT_SCALAR: 6>, None) 131
+ 58               then
+ 58                  assignment direction
+ 58                     constant (<DataTypes.INT_SCALAR: 6>, None) 1
+ 59            if
+ 59               condition
+ 59                  exprBinop Lexeme.SYMBOL_EQUAL
+ 59                     expVar key
+ 59                     constant (<DataTypes.INT_SCALAR: 6>, None) 133
+ 59               then
+ 59                  assignment direction
+ 59                     constant (<DataTypes.INT_SCALAR: 6>, None) 2
+ 60            if
+ 60               condition
+ 60                  exprBinop Lexeme.SYMBOL_EQUAL
+ 60                     expVar key
+ 60                     constant (<DataTypes.INT_SCALAR: 6>, None) 130
+ 60               then
+ 60                  assignment direction
+ 60                     constant (<DataTypes.INT_SCALAR: 6>, None) 3
+ 61            if
+ 61               condition
+ 61                  exprBinop Lexeme.SYMBOL_EQUAL
+ 61                     expVar key
+ 61                     constant (<DataTypes.INT_SCALAR: 6>, None) 132
+ 61               then
+ 61                  assignment direction
+ 61                     constant (<DataTypes.INT_SCALAR: 6>, None) 4
+ 64            while
+ 64               condition
+ 64                  exprUnop Lexeme.SYMBOL_NEGATE
+ 64                     exprBinop Lexeme.SYMBOL_EQUAL
+ 64                        expVar key
+ 64                        constant (<DataTypes.INT_SCALAR: 6>, None) 0
+ 64               statements
+ 65                  assignment key
+ 65                     subroutineCall Keyboard.keyPressed
+ 66                  do
+ 66                     subroutineCall moveSquare
+ 69      return

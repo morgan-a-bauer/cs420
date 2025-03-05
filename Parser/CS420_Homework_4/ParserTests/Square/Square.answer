@@ -1,0 +1,267 @@
+  3class Square
+  5   variable VariableScopes.FIELD DataTypes.INT_SCALAR x
+  5   variable VariableScopes.FIELD DataTypes.INT_SCALAR y
+  6   variable VariableScopes.FIELD DataTypes.INT_SCALAR size
+  9   subroutine SubroutineSpecifiers.CONSTRUCTOR DataTypes.CLASS_SCALAR new
+  9      variable VariableScopes.PARAMETER DataTypes.INT_SCALAR Ax
+  9      variable VariableScopes.PARAMETER DataTypes.INT_SCALAR Ay
+  9      variable VariableScopes.PARAMETER DataTypes.INT_SCALAR Asize
+ 10      assignment x
+ 10         expVar Ax
+ 11      assignment y
+ 11         expVar Ay
+ 12      assignment size
+ 12         expVar Asize
+ 13      do
+ 13         subroutineCall draw
+ 13            expVar a
+ 13            expVar b
+ 14      return
+ 14         constant (<DataTypes.CLASS_SCALAR: 5>, 'Square') Lexeme.KW_THIS
+ 18   subroutine SubroutineSpecifiers.METHOD DataTypes.VOID dispose
+ 19      do
+ 19         subroutineCall Memory.deAlloc
+ 19            constant (<DataTypes.CLASS_SCALAR: 5>, 'Square') Lexeme.KW_THIS
+ 20      return
+ 24   subroutine SubroutineSpecifiers.METHOD DataTypes.VOID draw
+ 25      do
+ 25         subroutineCall Screen.setColor
+ 25            constant (<DataTypes.BOOLEAN_SCALAR: 1>, None) True
+ 26      do
+ 26         subroutineCall Screen.drawRectangle
+ 26            expVar x
+ 26            expVar y
+ 26            exprBinop Lexeme.SYMBOL_PLUS
+ 26               expVar x
+ 26               expVar size
+ 26            exprBinop Lexeme.SYMBOL_PLUS
+ 26               expVar y
+ 26               expVar size
+ 27      return
+ 31   subroutine SubroutineSpecifiers.METHOD DataTypes.VOID erase
+ 32      do
+ 32         subroutineCall Screen.setColor
+ 32            constant (<DataTypes.BOOLEAN_SCALAR: 1>, None) False
+ 33      do
+ 33         subroutineCall Screen.drawRectangle
+ 33            expVar x
+ 33            expVar y
+ 33            exprBinop Lexeme.SYMBOL_PLUS
+ 33               expVar x
+ 33               expVar size
+ 33            exprBinop Lexeme.SYMBOL_PLUS
+ 33               expVar y
+ 33               expVar size
+ 34      return
+ 38   subroutine SubroutineSpecifiers.METHOD DataTypes.VOID incSize
+ 39      if
+ 39         condition
+ 39            exprBinop Lexeme.SYMBOL_AND
+ 39               exprBinop Lexeme.SYMBOL_LT
+ 39                  exprBinop Lexeme.SYMBOL_PLUS
+ 39                     expVar y
+ 39                     expVar size
+ 39                  constant (<DataTypes.INT_SCALAR: 6>, None) 254
+ 39               exprBinop Lexeme.SYMBOL_LT
+ 39                  exprBinop Lexeme.SYMBOL_PLUS
+ 39                     expVar x
+ 39                     expVar size
+ 39                  constant (<DataTypes.INT_SCALAR: 6>, None) 510
+ 39         then
+ 40            do
+ 40               subroutineCall erase
+ 41            assignment size
+ 41               exprBinop Lexeme.SYMBOL_PLUS
+ 41                  expVar size
+ 41                  constant (<DataTypes.INT_SCALAR: 6>, None) 2
+ 42            do
+ 42               subroutineCall draw
+ 44      return
+ 48   subroutine SubroutineSpecifiers.METHOD DataTypes.VOID decSize
+ 49      if
+ 49         condition
+ 49            exprBinop Lexeme.SYMBOL_GT
+ 49               expVar size
+ 49               constant (<DataTypes.INT_SCALAR: 6>, None) 2
+ 49         then
+ 50            do
+ 50               subroutineCall erase
+ 51            assignment size
+ 51               exprBinop Lexeme.SYMBOL_MINUS
+ 51                  expVar size
+ 51                  constant (<DataTypes.INT_SCALAR: 6>, None) 2
+ 52            do
+ 52               subroutineCall draw
+ 54      return
+ 58   subroutine SubroutineSpecifiers.METHOD DataTypes.VOID moveUp
+ 59      if
+ 59         condition
+ 59            exprBinop Lexeme.SYMBOL_GT
+ 59               expVar y
+ 59               constant (<DataTypes.INT_SCALAR: 6>, None) 1
+ 59         then
+ 60            do
+ 60               subroutineCall Screen.setColor
+ 60                  constant (<DataTypes.BOOLEAN_SCALAR: 1>, None) False
+ 61            do
+ 61               subroutineCall Screen.drawRectangle
+ 61                  expVar x
+ 61                  exprBinop Lexeme.SYMBOL_MINUS
+ 61                     exprBinop Lexeme.SYMBOL_PLUS
+ 61                        expVar y
+ 61                        expVar size
+ 61                     constant (<DataTypes.INT_SCALAR: 6>, None) 1
+ 61                  exprBinop Lexeme.SYMBOL_PLUS
+ 61                     expVar x
+ 61                     expVar size
+ 61                  exprBinop Lexeme.SYMBOL_PLUS
+ 61                     expVar y
+ 61                     expVar size
+ 62            assignment y
+ 62               exprBinop Lexeme.SYMBOL_MINUS
+ 62                  expVar y
+ 62                  constant (<DataTypes.INT_SCALAR: 6>, None) 2
+ 63            do
+ 63               subroutineCall Screen.setColor
+ 63                  constant (<DataTypes.BOOLEAN_SCALAR: 1>, None) True
+ 64            do
+ 64               subroutineCall Screen.drawRectangle
+ 64                  expVar x
+ 64                  expVar y
+ 64                  exprBinop Lexeme.SYMBOL_PLUS
+ 64                     expVar x
+ 64                     expVar size
+ 64                  exprBinop Lexeme.SYMBOL_PLUS
+ 64                     expVar y
+ 64                     constant (<DataTypes.INT_SCALAR: 6>, None) 1
+ 66      return
+ 70   subroutine SubroutineSpecifiers.METHOD DataTypes.VOID moveDown
+ 71      if
+ 71         condition
+ 71            exprBinop Lexeme.SYMBOL_LT
+ 71               exprBinop Lexeme.SYMBOL_PLUS
+ 71                  expVar y
+ 71                  expVar size
+ 71               constant (<DataTypes.INT_SCALAR: 6>, None) 254
+ 71         then
+ 72            do
+ 72               subroutineCall Screen.setColor
+ 72                  constant (<DataTypes.BOOLEAN_SCALAR: 1>, None) False
+ 73            do
+ 73               subroutineCall Screen.drawRectangle
+ 73                  expVar x
+ 73                  expVar y
+ 73                  exprBinop Lexeme.SYMBOL_PLUS
+ 73                     expVar x
+ 73                     expVar size
+ 73                  exprBinop Lexeme.SYMBOL_PLUS
+ 73                     expVar y
+ 73                     constant (<DataTypes.INT_SCALAR: 6>, None) 1
+ 74            assignment y
+ 74               exprBinop Lexeme.SYMBOL_PLUS
+ 74                  expVar y
+ 74                  constant (<DataTypes.INT_SCALAR: 6>, None) 2
+ 75            do
+ 75               subroutineCall Screen.setColor
+ 75                  constant (<DataTypes.BOOLEAN_SCALAR: 1>, None) True
+ 76            do
+ 76               subroutineCall Screen.drawRectangle
+ 76                  expVar x
+ 76                  exprBinop Lexeme.SYMBOL_MINUS
+ 76                     exprBinop Lexeme.SYMBOL_PLUS
+ 76                        expVar y
+ 76                        expVar size
+ 76                     constant (<DataTypes.INT_SCALAR: 6>, None) 1
+ 76                  exprBinop Lexeme.SYMBOL_PLUS
+ 76                     expVar x
+ 76                     expVar size
+ 76                  exprBinop Lexeme.SYMBOL_PLUS
+ 76                     expVar y
+ 76                     expVar size
+ 78      return
+ 82   subroutine SubroutineSpecifiers.METHOD DataTypes.VOID moveLeft
+ 83      if
+ 83         condition
+ 83            exprBinop Lexeme.SYMBOL_GT
+ 83               expVar x
+ 83               constant (<DataTypes.INT_SCALAR: 6>, None) 1
+ 83         then
+ 84            do
+ 84               subroutineCall Screen.setColor
+ 84                  constant (<DataTypes.BOOLEAN_SCALAR: 1>, None) False
+ 85            do
+ 85               subroutineCall Screen.drawRectangle
+ 85                  exprBinop Lexeme.SYMBOL_MINUS
+ 85                     exprBinop Lexeme.SYMBOL_PLUS
+ 85                        expVar x
+ 85                        expVar size
+ 85                     constant (<DataTypes.INT_SCALAR: 6>, None) 1
+ 85                  expVar y
+ 85                  exprBinop Lexeme.SYMBOL_PLUS
+ 85                     expVar x
+ 85                     expVar size
+ 85                  exprBinop Lexeme.SYMBOL_PLUS
+ 85                     expVar y
+ 85                     expVar size
+ 86            assignment x
+ 86               exprBinop Lexeme.SYMBOL_MINUS
+ 86                  expVar x
+ 86                  constant (<DataTypes.INT_SCALAR: 6>, None) 2
+ 87            do
+ 87               subroutineCall Screen.setColor
+ 87                  constant (<DataTypes.BOOLEAN_SCALAR: 1>, None) True
+ 88            do
+ 88               subroutineCall Screen.drawRectangle
+ 88                  expVar x
+ 88                  expVar y
+ 88                  exprBinop Lexeme.SYMBOL_PLUS
+ 88                     expVar x
+ 88                     constant (<DataTypes.INT_SCALAR: 6>, None) 1
+ 88                  exprBinop Lexeme.SYMBOL_PLUS
+ 88                     expVar y
+ 88                     expVar size
+ 90      return
+ 94   subroutine SubroutineSpecifiers.METHOD DataTypes.VOID moveRight
+ 95      if
+ 95         condition
+ 95            exprBinop Lexeme.SYMBOL_LT
+ 95               exprBinop Lexeme.SYMBOL_PLUS
+ 95                  expVar x
+ 95                  expVar size
+ 95               constant (<DataTypes.INT_SCALAR: 6>, None) 510
+ 95         then
+ 96            do
+ 96               subroutineCall Screen.setColor
+ 96                  constant (<DataTypes.BOOLEAN_SCALAR: 1>, None) False
+ 97            do
+ 97               subroutineCall Screen.drawRectangle
+ 97                  expVar x
+ 97                  expVar y
+ 97                  exprBinop Lexeme.SYMBOL_PLUS
+ 97                     expVar x
+ 97                     constant (<DataTypes.INT_SCALAR: 6>, None) 1
+ 97                  exprBinop Lexeme.SYMBOL_PLUS
+ 97                     expVar y
+ 97                     expVar size
+ 98            assignment x
+ 98               exprBinop Lexeme.SYMBOL_PLUS
+ 98                  expVar x
+ 98                  constant (<DataTypes.INT_SCALAR: 6>, None) 2
+ 99            do
+ 99               subroutineCall Screen.setColor
+ 99                  constant (<DataTypes.BOOLEAN_SCALAR: 1>, None) True
+100            do
+100               subroutineCall Screen.drawRectangle
+100                  exprBinop Lexeme.SYMBOL_MINUS
+100                     exprBinop Lexeme.SYMBOL_PLUS
+100                        expVar x
+100                        expVar size
+100                     constant (<DataTypes.INT_SCALAR: 6>, None) 1
+100                  expVar y
+100                  exprBinop Lexeme.SYMBOL_PLUS
+100                     expVar x
+100                     expVar size
+100                  exprBinop Lexeme.SYMBOL_PLUS
+100                     expVar y
+100                     expVar size
+102      return

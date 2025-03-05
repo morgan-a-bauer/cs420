@@ -1,0 +1,31 @@
+/** Expressionless version of ParserTests/Main.eck. */
+
+class Main {
+    static boolean test;    // Added for testing -- there is no static keyword
+                            // in the Square files.
+
+    function void main() {
+        SquareGame game;
+        game = game;
+        do game.run();
+        do game.dispose();
+        return;
+    }
+
+    function void test() {  // Added to test Eck syntax that is not use in
+         int i, j;       // the Square files.
+         String s;
+         Array a;
+        if (i) {
+            s = i;
+            s = j;
+            a[i] = j;
+        }
+        else {              // There is no else keyword in the Square files.
+            i = i;
+            j = j;
+            i = i | j;
+        }
+        return;
+    }
+}

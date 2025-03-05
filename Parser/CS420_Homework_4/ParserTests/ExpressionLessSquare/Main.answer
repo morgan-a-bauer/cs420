@@ -1,0 +1,38 @@
+  3class Main
+  4   variable VariableScopes.STATIC DataTypes.BOOLEAN_SCALAR test
+  7   subroutine SubroutineSpecifiers.FUNCTION DataTypes.VOID main
+  8      variable VariableScopes.LOCAL DataTypes.CLASS_SCALAR game
+  9      assignment game
+  9         expVar game
+ 10      do
+ 10         subroutineCall game.run
+ 11      do
+ 11         subroutineCall game.dispose
+ 12      return
+ 15   subroutine SubroutineSpecifiers.FUNCTION DataTypes.VOID test
+ 16      variable VariableScopes.LOCAL DataTypes.INT_SCALAR i
+ 16      variable VariableScopes.LOCAL DataTypes.INT_SCALAR j
+ 17      variable VariableScopes.LOCAL DataTypes.CLASS_SCALAR s
+ 18      variable VariableScopes.LOCAL DataTypes.CLASS_SCALAR a
+ 19      if
+ 19         condition
+ 19            expVar i
+ 19         then
+ 20            assignment s
+ 20               expVar i
+ 21            assignment s
+ 21               expVar j
+ 22            assignment a
+ 22               array index
+ 22                  expVar i
+ 22               expVar j
+ 19         else
+ 25            assignment i
+ 25               expVar i
+ 26            assignment j
+ 26               expVar j
+ 27            assignment i
+ 27               exprBinop Lexeme.SYMBOL_OR
+ 27                  expVar i
+ 27                  expVar j
+ 29      return
