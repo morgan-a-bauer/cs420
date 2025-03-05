@@ -139,7 +139,14 @@ class Parser:
     def pClassVarDecs(self):
         """<classVarDec > →  <classVarModifier> <type>  <varList>;"""
         scope = self.pClassVarModifier()
-        type = self.pType()
+        typ = self.pType()
+        names = self.pVarList()
+        line = self.lineNumber
+        pirVars = []
+        for name in names:
+            pirVarDec = PIR_VariableDeclaration(line, typ, name, scope)
+            pirVars.append(pirVarDec)
+        return pirVars
 
     def pClassVarModifier(self):
         """<classVarModifier> → static | field"""
@@ -162,7 +169,30 @@ class Parser:
 
     def pType(self):
         """<type> →  int | char | boolean | int[] | char[] | boolean[] | <className>"""
-        pass
+        if self.matchNext(Lexeme.IDENTIFIER):
+            return self.token[1]
+        elif self.match(Lexeme.KW_INT):
+            if self.lookaheadToken() == Lexeme.SYMBOL_OPEN_BRACE:
+                    return DataTypes.INT_ARRAY
+            return DataTypes.INT_SCALAR
+        elif self.match(Lexeme.KW_CHAR):
+            if self.lookaheadToken() == Lexeme.SYMBOL_OPEN_BRACE:
+                    return DataTypes.CHAR_ARRAY
+            return DataTypes.CHAR_SCALAR
+        elif self.match(Lexeme.KW_BOOLEAN):
+            if self.lookaheadToken() == Lexeme.SYMBOL_OPEN_BRACE:
+                    return DataTypes.BOOLEAN_ARRAY
+            return DataTypes.BOOLEAN_SCALAR
+
+    def pVarList(self):
+        varList = []
+        if self.matchNext(Lexeme.SYMBOL_SEMICOLON):
+            return []
+        elif self.match(Lexeme.IDENTIFIER):
+            varList.append(self.token[1])
+            varList = varList + self.pVarList()
+            return varList
+
 
 if __name__ == "__main__":
     import io
@@ -181,6 +211,7 @@ if __name__ == "__main__":
         # create the output file names
         root, _ = os.path.splitext(filename)
         parserOutfile = root + ".parse"
+        print(parserOutfile)
         answerFilename = root + ".answer"
 
         # parse the file
