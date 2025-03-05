@@ -162,6 +162,7 @@ class Parser:
 
     def pType(self):
         """<type> →  int | char | boolean | int[] | char[] | boolean[] | <className>"""
+        pass
 
 if __name__ == "__main__":
     import io
