@@ -160,38 +160,123 @@ class Parser:
         self.matchNext(Lexeme.IDENTIFIER, "Expected a class name")
         return self.token[1]
 
+    def pFormalParameters(self):
+        """<formalParameters> →  <parameterList> | epsilon"""
+        if self.lookaheadToken()[0] == Lexeme.SYMBOL_CLOSE_PAREN:
+            self.nextToken()
+            return []
+        return self.pParameterList()
+
+    def pParameterList(self):
+        """<parameterList> →  <type><varName><parameterList1>"""
+        params = []
+        typ = self.pType()
+        name = self.pVarName()
+        pirVarDec = PIR_VariableDeclaration(self.lineNumber, typ, name,
+                                            VariableScopes.PARAMETER)
+        params.append(pirVarDec)
+        params = params + self.pParameterList1()
+        return params
+
+    def pParameterList1(self):
+        """<parameterList1> →  <parameterList> | epsilon"""
+        if self.lookaheadToken()[0] == Lexeme.SYMBOL_CLOSE_PAREN:
+            return []
+        self.matchNext(Lexeme.SYMBOL_COMMA, "Expected a ','")
+        return self.pParameterList()
+
+    def pSubroutineBody(self):
+        """<subroutineBody> →  <varDec>*<statements>"""
+        body = []
+        while self.lookaheadToken()[0] != Lexeme.SYMBOL_SEMICOLON:
+            var = self.pVarDec()
+            body.append[var]
+        statements = self.pStatements()
+
+        return vars, statements
+
     def pSubroutineDecs(self):
         """
         <subroutineDec> →  <subroutineSpecifier>  <subroutineType>
                 <subroutineName>  (<formalParameters>) { <subroutineBody> }
         """
-        pass
+        spec = self.pSubroutineSpecifier()
+        typ = self.pSubroutineType()
+        name = self.pSubroutineName()
+        # parse parameter list
+        self.matchNext(Lexeme.SYMBOL_CLOSE_PAREN, "Expected a '('")
+        formal_params = self.pFormalParameters()
+        # parse body of a subroutine
+        self.matchNext(Lexeme.SYMBOL_OPEN_BRACE, "Expected a '{'")
+        body = self.pSubroutineBody()
+
+    def pSubroutineName(self):
+        """<subroutineName> →  identifier"""
+        #TODO: Error message
+        name = self.matchNext(Lexeme.IDENTIFIER, "")
+        return name
+
+    def pSubroutineSpecifier(self):
+        """<subroutineSpecifier> →  constructor | function | method"""
+        if self.matchNext(Lexeme.KW_CONSTRUCTOR):
+            return SubroutineSpecifiers.CONSTRUCTOR
+        elif self.match(Lexeme.KW_FUNCTION):
+            return SubroutineSpecifiers.FUNCTION
+        elif self.match(Lexeme.KW_METHOD):
+            return SubroutineSpecifiers.METHOD
+
+    def pSubroutineType(self):
+        """<subroutineType> →  void | <type>"""
+        if self.lookahead()[0] == (Lexeme.KW_VOID):
+            self.nextToken()
+            return DataTypes.VOID
+        return self.pType
 
     def pType(self):
         """<type> →  int | char | boolean | int[] | char[] | boolean[] | <className>"""
         if self.matchNext(Lexeme.IDENTIFIER):
             return self.token[1]
         elif self.match(Lexeme.KW_INT):
-            if self.lookaheadToken() == Lexeme.SYMBOL_OPEN_BRACE:
-                    return DataTypes.INT_ARRAY
+            if self.lookaheadToken()[0] == Lexeme.SYMBOL_OPEN_BRACE:
+                self.nextToken()
+                self.nextToken()
+                return DataTypes.INT_ARRAY
             return DataTypes.INT_SCALAR
         elif self.match(Lexeme.KW_CHAR):
-            if self.lookaheadToken() == Lexeme.SYMBOL_OPEN_BRACE:
-                    return DataTypes.CHAR_ARRAY
+            if self.lookaheadToken()[0] == Lexeme.SYMBOL_OPEN_BRACE:
+                self.nextToken()
+                self.nextToken()
+                return DataTypes.CHAR_ARRAY
             return DataTypes.CHAR_SCALAR
         elif self.match(Lexeme.KW_BOOLEAN):
-            if self.lookaheadToken() == Lexeme.SYMBOL_OPEN_BRACE:
-                    return DataTypes.BOOLEAN_ARRAY
+            if self.lookaheadToken()[0] == Lexeme.SYMBOL_OPEN_BRACE:
+                self.nextToken()
+                self.nextToken()
+                return DataTypes.BOOLEAN_ARRAY
             return DataTypes.BOOLEAN_SCALAR
 
     def pVarList(self):
+        """<varList> →  <varName><varList1>"""
         varList = []
-        if self.matchNext(Lexeme.SYMBOL_SEMICOLON):
-            return []
-        elif self.match(Lexeme.IDENTIFIER):
+        if self.matchNext(Lexeme.IDENTIFIER):
             varList.append(self.token[1])
-            varList = varList + self.pVarList()
-            return varList
+        #TODO: raise parser error is not an identifier
+        varList = varList + self.pVarList1()
+        return varList
+
+    def pVarList1(self):
+        """<varList1> →  <varList> | epsilon"""
+        varList = []
+        if self.lookaheadToken()[0] == Lexeme.SYMBOL_SEMICOLON:
+            return []
+        self.matchNext(Lexeme.SYMBOL_COMMA, "Expected a ','")
+        return self.pVarList()
+
+    def pVarName(self):
+        """<varName> →  identifier"""
+        #TODO: err message
+        name = self.matchNext(Lexeme.IDENTIFIER, "")
+        return name
 
 
 if __name__ == "__main__":
