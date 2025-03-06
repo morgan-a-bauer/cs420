@@ -47,7 +47,7 @@ class Parser:
     @property
     def token(self):
         return self.__token
-    
+
     def lookaheadToken(self):
         """Returns the next token, but does not remove it from the
         input stream."""
@@ -120,6 +120,16 @@ class Parser:
         # attempt to parse the class
         return self.pClass()
 
+    def pAssignmentStatement(self):
+        """<assignmentStatement> →  <varName><varArray> = <expression> ;"""
+        varName = self.pVarName()
+        varArray = self.pVarArray()
+        self.matchNext(Lexeme.SYMBOL_EQUAL, "Expected a '='")
+        expr = self.pExpression()
+        self.matchNext(Lexeme.SYMBOL_SEMICOLON, "Expected a ';'")
+        asmt = PIR_AssignmentStatement(self.lineNumber, varName, varArray, expr)
+        return asmt
+
     def pClass(self):
         """<classDec> →  class <className> { <classVarDec>*  <subroutineDec>* }"""
         if self.match(Lexeme.KW_CLASS, "Expected a class definition"):
@@ -160,6 +170,56 @@ class Parser:
         self.matchNext(Lexeme.IDENTIFIER, "Expected a class name")
         return self.token[1]
 
+    def pExpression(self):
+        """<expression> →  <exp1><expression'>"""
+        pass
+
+    def pExp3p(self):
+        """<exp3'> →  * <exp4><exp3'> | / <exp4><exp3'> | epsilon"""
+        if self.matchNext(Lexeme.SYMBOL_TIMES):
+            op = Lexeme.SYMBOL_TIMES
+    def pExp4(self):
+        """<exp4> →  - <exp4> | ~ <exp4> | integerConstant | stringConstant |
+                     <keywordConstant> | identifier <exp4Id> |
+                     ( <expression> )
+        """
+        if self.matchNext(Lexeme.SYMBOL_MINUS):
+            op = Lexeme.SYMBOL_MINUS
+            expr = self.pExp4()
+            return PIR_ExpressionUnop(self.lineNumber, op, expr)
+        elif self.match(Lexeme.SYMBOL_NEGATE):
+            op = Lexeme.SYMBOL_NEGATE
+            expr = self.pExp4()
+        elif self.match(Lexeme.INTEGER_CONST):
+            return PIR_ExpressionConstant(self.lineNumber, Lexeme.INTEGER_CONST,
+                                          self.token[1])
+        elif self.match(Lexeme.STRING_CONST):
+            return PIR_ExpressionConstant(self.lineNumber, Lexeme.STRING_CONST,
+                                          self.token[1])
+        elif self.match(Lexeme.IDENTIFIER):
+            lk = self.lookaheadToken()[0]
+            if lk == Lexeme.SYMBOL_OPEN_BRACKET:
+                expr = self.pExpression()
+                return PIR_ExpressionVariable(self.lineNumber, self.token[1], expr)
+        elif self.match(Lexeme.SYMBOL_OPEN_PAREN):
+            expr = self.pExpression()
+            self.matchNext(Lexeme.SYMBOL_CLOSE_PAREN, "Expected a ')'")
+            return expr
+        else:
+            return self.pKeywordConstant()
+        
+    def pExp4Id(self):
+        """<exp4Id> →  [ <expression> ] | . <subroutineName><actualParameters> |
+           <actualParameters> | epsilon"""
+        if self.matchNext(Lexeme.SYMBOL_OPEN_BRACKET):
+            expr = self.pExpression()
+            self.matchNext(Lexeme.SYMBOL_CLOSE_BRACKET, "Expected a ']'")
+            return expr
+        elif self.match(Lexeme.SYMBOL_DOT):
+            subName = self.pSubroutineName()
+            params = self.pActualParameters()
+            return subName, params
+
     def pFormalParameters(self):
         """<formalParameters> →  <parameterList> | epsilon"""
         if self.lookaheadToken()[0] == Lexeme.SYMBOL_CLOSE_PAREN:
@@ -187,13 +247,43 @@ class Parser:
 
     def pSubroutineBody(self):
         """<subroutineBody> →  <varDec>*<statements>"""
-        body = []
+        #TODO: if no variables
         while self.lookaheadToken()[0] != Lexeme.SYMBOL_SEMICOLON:
-            var = self.pVarDec()
-            body.append[var]
-        statements = self.pStatements()
+            typ, names = self.pVarDec()
+            vars = []
+            for name in names:
+                var = PIR_VariableDeclaration(self.lineNumber, typ, name,
+                                              VariableScopes.LOCAL)
+                vars.append(var)
+            body = vars
+        body = body + self.pStatements()
 
-        return vars, statements
+        return body
+
+    def pStatement(self):
+        """<statement> →  <assignmentStatement> | <ifStatement> |
+                          <whileStatement> | <doStatement> |
+                          <returnStatement>"""
+        lk = self.lookaheadToken()[0]
+        if lk == Lexeme.KW_IF:
+            statement = self.pIfStatement()
+        elif lk == Lexeme.KW_WHILE:
+            statement = self.pWhileStatement()
+        elif lk == Lexeme.KW_DO:
+            statement = self.pDoStatement()
+        elif lk == Lexeme.KW_RETURN:
+            statement = self.pReturnStatement()
+        else:
+            statement = self.pAssignmentStatement()
+        return statement
+
+    def pStatements(self):
+        """<statements> →  <statement>*"""
+        statements = []
+        while self.lookaheadToken()[0] != Lexeme.SYMBOL_CLOSE_BRACE:
+            statement = self.pStatement()
+            statements.append(statement)
+        return statements
 
     def pSubroutineDecs(self):
         """
@@ -227,7 +317,7 @@ class Parser:
 
     def pSubroutineType(self):
         """<subroutineType> →  void | <type>"""
-        if self.lookahead()[0] == (Lexeme.KW_VOID):
+        if self.lookaheadToken()[0] == (Lexeme.KW_VOID):
             self.nextToken()
             return DataTypes.VOID
         return self.pType
@@ -254,6 +344,21 @@ class Parser:
                 self.nextToken()
                 return DataTypes.BOOLEAN_ARRAY
             return DataTypes.BOOLEAN_SCALAR
+
+    def pVarArray(self):
+        """<varArray> →  [ <expression> ] | epsilon"""
+        if self.lookaheadToken()[0] == Lexeme.SYMBOL_EQUAL:
+            return None
+        self.matchNext(Lexeme.SYMBOL_OPEN_BRACKET, "Expected a '['")
+        expr = self.pExpression()
+        self.matchNext(Lexeme.SYMBOL_CLOSE_BRACKET, "Expected a ']'")
+        return expr
+
+    def pVarDec(self):
+        """<varDec> →  <type><varList>"""
+        typ = self.pType()
+        varNames = self.pVarList()
+        return typ, varNames
 
     def pVarList(self):
         """<varList> →  <varName><varList1>"""
