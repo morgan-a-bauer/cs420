@@ -42,9 +42,11 @@ class PIR_Printer:
         nextIndent = " " * nextIndentation
         self.__ioStream.write(
             f"{arg.lineNumber:3d}{indent}assignment {arg.variable}\n")
+        print(f"{arg.lineNumber:3d}{indent}assignment {arg.variable}\n") ###
         if arg.arrayExpression is not None:
             self.__ioStream.write(
                 f"{arg.lineNumber:3d}{nextIndent}array index\n")
+            print(f"{arg.lineNumber:3d}{nextIndent}array index\n") ###
             self.printNode(arg.arrayExpression,
                            nextIndentation + PIR_Printer.INDENTATION_INCR)
         self.printNode(arg.expression, nextIndentation)

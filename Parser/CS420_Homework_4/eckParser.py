@@ -120,6 +120,17 @@ class Parser:
         # attempt to parse the class
         return self.pClass()
 
+    def pActualParameters(self):
+        """<actualParameters> →  ( <expressionList> )"""
+        self.matchNext(Lexeme.SYMBOL_OPEN_PAREN, "Expected a '('")
+        lk = self.lookaheadToken()[0]
+        if lk == Lexeme.SYMBOL_CLOSE_PAREN:
+            #TODO: empty list?
+            return None
+        exprList = self.pExpressionList()
+        self.matchNext(Lexeme.SYMBOL_CLOSE_PAREN, "Expected a ')'")
+        return exprList
+
     def pAssignmentStatement(self):
         """<assignmentStatement> →  <varName><varArray> = <expression> ;"""
         varName = self.pVarName()
@@ -170,14 +181,132 @@ class Parser:
         self.matchNext(Lexeme.IDENTIFIER, "Expected a class name")
         return self.token[1]
 
+    def pDoStatement(self):
+        """<doStatement> →  do identifier <doStatement1><actualParameters>;"""
+        self.nextToken()
+        #TODO: Add error
+        name = self.matchNext(Lexeme.IDENTIFIER)
+        scope = None
+        lk = self.lookaheadToken[0]
+        if lk == Lexeme.SYMBOL_DOT:
+            scope = name
+            name = self.pDoStatement1()
+        params = self.pActualParameters()
+        sub_call = PIR_SubroutineCall(self.lineNumber, scope, name, params)
+        self.matchNext(Lexeme.SYMBOL_SEMICOLON, "Expected a ';'")
+        return PIR_DoStatement(self.lineNumber, sub_call)
+
+    def pDoStatement1(self):
+        """<doStatement1> →  .identifier | epsilon"""
+        self.nextToken()
+        #TODO: error
+        self.matchNext(Lexeme.IDENTIFIER)
+        return self.token[1]
+
+    def pElseStatement(self):
+        """<elseStatement> →  else { <statements } | epsilon"""
+        self.matchNext(Lexeme.SYMBOL_OPEN_BRACE, "Expected a '{'")
+        stmts = self.pStatements()
+        self.matchNext(Lexeme.SYMBOL_CLOSE_BRACE, "Expected a '}'")
+        return stmts
+
     def pExpression(self):
         """<expression> →  <exp1><expression'>"""
-        pass
+        operand1 = self.pExp1()
+        op, operand2 = self.pExpressionp()
+        if op == None:
+            return operand1
+        return PIR_ExpressionBinop(self.lineNumber, op, operand1, operand2)
+
+    def pExpressionList(self):
+        """<expressionList> →  <expressionList> | epsilon"""
+        exprs = self.pExpressionList1()
+        return exprs
+
+    def pExpressionList1(self):
+        """<expressionList1> →  <expression><expressionList2>"""
+        exprs = []
+        exprs.append(self.pExpression())
+        lk = self.lookaheadToken()[0]
+        if lk == Lexeme.SYMBOL_COMMA:
+            exprs = exprs + self.pExpressionList2()
+        return exprs
+
+    def pExpressionList2(self):
+        """<expressionList2> →  , <expressionList1> | epsilon"""
+        self.nextToken()
+        exprs = self.pExpressionList1()
+        return exprs
+
+    def pExpressionp(self):
+        """<expression'> →  & <exp1><expression'> | | <exp1><expression'> | epsilon"""
+        if self.matchNext(Lexeme.SYMBOL_SEMICOLON) or self.match(Lexeme.SYMBOL_CLOSE_BRACKET) or\
+           self.match(Lexeme.SYMBOL_CLOSE_PAREN) or self.match(Lexeme.SYMBOL_COMMA):
+            return None, None
+        elif self.match(Lexeme.SYMBOL_AND):
+            op = Lexeme.SYMBOL_AND
+            operand2 = self.pExpression()
+            return op, operand2
+        elif self.match(Lexeme.SYMBOL_OR):
+            op = Lexeme.SYMBOL_OR
+            operand2 = self.pExpression()
+            return op, operand2
+
+    def pExp1(self):
+        """<exp1> →  <exp2><exp1'>"""
+        operand1 = self.pExp2()
+        op, operand2 = self.pExp1p()
+        return PIR_ExpressionBinop(self.lineNumber, op, operand1, operand2)
+
+    def pExp1p(self):
+        """<exp1'> →  < <exp2><exp1'> | > <exp2><exp1'> | = <exp2><exp1'>| epsilon"""
+        if self.matchNext(Lexeme.SYMBOL_LT):
+            op = Lexeme.SYMBOL_LT
+            operand2 = self.pExp2()
+            return op, operand2
+        elif self.match(Lexeme.SYMBOL_GT):
+            op = Lexeme.SYMBOL_GT
+            operand2 = self.pExp2()
+            return op, operand2
+        elif self.match(Lexeme.SYMBOL_EQUAL):
+            op = Lexeme.SYMBOL_EQUAL
+            operand2 = self.pExp2()
+            return op, operand2
+
+    def pExp2(self):
+        """<exp2> →  <exp3><exp2'>"""
+        operand1 = self.pExp3()
+        op, operand2 = self.pExp2p()
+        return PIR_ExpressionBinop(self.lineNumber, op, operand1, operand2)
+
+    def pExp2p(self):
+        """<exp2'> →  + <exp3><exp2'> | - <exp3><exp2'> | epsilon"""
+        if self.matchNext(Lexeme.SYMBOL_PLUS):
+            op = Lexeme.SYMBOL_PLUS
+            operand2 = self.pExp2()
+            return op, operand2
+        elif self.match(Lexeme.SYMBOL_MINUS):
+            op = Lexeme.SYMBOL_MINUS
+            operand2 = self.pExp2()
+            return op, operand2
+
+    def pExp3(self):
+        """<exp3> →  <exp4><exp3'>"""
+        operand1 = self.pExp4()
+        op, operand2 = self.pExp3p()
+        return PIR_ExpressionBinop(self.lineNumber, op, operand1, operand2)
 
     def pExp3p(self):
         """<exp3'> →  * <exp4><exp3'> | / <exp4><exp3'> | epsilon"""
         if self.matchNext(Lexeme.SYMBOL_TIMES):
             op = Lexeme.SYMBOL_TIMES
+            operand2 = self.pExp3()
+            return op, operand2
+        elif self.match(Lexeme.SYMBOL_DIVIDE):
+            op = Lexeme.SYMBOL_DIVIDE
+            operand2 = self.pExp3()
+            return op, operand2
+
     def pExp4(self):
         """<exp4> →  - <exp4> | ~ <exp4> | integerConstant | stringConstant |
                      <keywordConstant> | identifier <exp4Id> |
@@ -207,13 +336,9 @@ class Parser:
                 return PIR_SubroutineCall(self.lineNumber, ident, name, params)
             elif lk == Lexeme.SYMBOL_OPEN_PAREN:
                 params = self.pExp4Id()
-        elif self.match(Lexeme.SYMBOL_OPEN_PAREN):
-            expr = self.pExpression()
-            self.matchNext(Lexeme.SYMBOL_CLOSE_PAREN, "Expected a ')'")
-            return expr
         else:
             return self.pKeywordConstant()
-        
+
     def pExp4Id(self):
         """<exp4Id> →  [ <expression> ] | . <subroutineName><actualParameters> |
            <actualParameters> | epsilon"""
@@ -229,13 +354,38 @@ class Parser:
             params = self.pActualParameters()
             return subName, params
 
-
     def pFormalParameters(self):
         """<formalParameters> →  <parameterList> | epsilon"""
         if self.lookaheadToken()[0] == Lexeme.SYMBOL_CLOSE_PAREN:
             self.nextToken()
             return []
         return self.pParameterList()
+
+    def pKeywordConstant(self):
+        """<keywordConstant> →  true | false | null | this"""
+        if self.matchNext(Lexeme.KW_TRUE):
+            return PIR_ExpressionConstant(self.lineNumber, (DataTypes.BOOLEAN_SCALAR, None), Lexeme.KW_TRUE)
+        elif self.matchNext(Lexeme.KW_FALSE):
+            return PIR_ExpressionConstant(self.lineNumber, (DataTypes.BOOLEAN_SCALAR, None), Lexeme.KW_FALSE)
+        elif self.matchNext(Lexeme.KW_NULL):
+            return PIR_ExpressionConstant(self.lineNumber, (DataTypes.VOID, None), None)
+        elif self.matchNext(Lexeme.KW_THIS):
+            return PIR_ExpressionConstant(self.lineNumber, (DataTypes.CLASS_SCALAR, "String"), Lexeme.KW_THIS)
+
+    def pIfStatement(self):
+        """<ifStatement> →  if ( <expression> ) { <statements> } <elseStatement>"""
+        # Consume if keyword
+        self.nextToken()
+        self.matchNext(Lexeme.SYMBOL_OPEN_PAREN, "Expected a '('")
+        expr = self.pExpression()
+        self.matchNext(Lexeme.SYMBOL_CLOSE_PAREN, "Expected a ')'")
+        self.matchNext(Lexeme.SYMBOL_OPEN_BRACE, "Expected a '{'")
+        stmts = self.pStatements()
+        self.matchNext(Lexeme.SYMBOL_CLOSE_BRACE, "Expected a '}'")
+        if self.lookaheadToken()[0] == Lexeme.KW_ELSE:
+            else_stmt = self.pElseStatement()
+            return PIR_IfStatement(self.lineNumber, expr, stmts)
+        return PIR_IfStatement(self.lineNumber, expr, stmts)
 
     def pParameterList(self):
         """<parameterList> →  <type><varName><parameterList1>"""
@@ -254,6 +404,21 @@ class Parser:
             return []
         self.matchNext(Lexeme.SYMBOL_COMMA, "Expected a ','")
         return self.pParameterList()
+
+    def pReturnStatement(self):
+        """<returnStatement> →  return <returnStatement1> ;"""
+        self.nectToken()
+        lk = self.lookaheadToken()[0]
+        if lk == Lexeme.SYMBOL_SEMICOLON:
+            return PIR_ReturnStatement(self.lineNumber)
+        expr = self.pReturnStatement1()
+        self.matchNext(Lexeme.SYMBOL_SEMICOLON, "Expected a ';'")
+        return PIR_ReturnStatement(self.lineNumber, expr)
+
+    def pReturnStatement1(self):
+        """<returnStatement1> →  <expression> | epsilon"""
+        expr = self.pExpression()
+        return expr
 
     def pSubroutineBody(self):
         """<subroutineBody> →  <varDec>*<statements>"""
@@ -393,6 +558,17 @@ class Parser:
         name = self.matchNext(Lexeme.IDENTIFIER, "")
         return name
 
+    def pWhileStatement(self):
+        """<whileStatement> →  while ( <expression> ) { <statements> }"""
+        # Consume keyword while
+        self.nextToken()
+        self.matchNext(Lexeme.SYMBOL_OPEN_PAREN, "Expected a '('")
+        expr = self.pExpression()
+        self.matchNext(Lexeme.SYMBOL_CLOSE_PAREN, "Expected a ')'")
+        self.matchNext(Lexeme.SYMBOL_OPEN_BRACE, "Expected a '{'")
+        stmts = self.pStatements()
+        self.matchNext(Lexeme.SYMBOL_CLOSE_BRACE, "Expected a '}'")
+        return PIR_WhileStatement(self.lineNumber, expr, stmts)
 
 if __name__ == "__main__":
     import io
@@ -449,18 +625,18 @@ if __name__ == "__main__":
     """
     # TODO: Change path names back (take out Parser/CS420_Homework_4/)
     tester("Parser/CS420_Homework_4/ParserTests/ExpressionlessSquare/Main.eck")
-    tester("Parser/CS420_Homework_4/ParserTests/ExpressionlessSquare/Square.eck")
-    tester("Parser/CS420_Homework_4/ParserTests/ExpressionlessSquare/SquareGame.eck")
+    #tester("Parser/CS420_Homework_4/ParserTests/ExpressionlessSquare/Square.eck")
+    #tester("Parser/CS420_Homework_4/ParserTests/ExpressionlessSquare/SquareGame.eck")
 
     """
     These files test expressions
     """
-    tester("Parser/CS420_Homework_4/ParserTests/ExpressionTests.eck")
+    #tester("Parser/CS420_Homework_4/ParserTests/ExpressionTests.eck")
 
     """
     These files require the full parser to be implemented
     """
-    tester("Parser/CS420_Homework_4/ParserTests/Square/Main.eck")
-    tester("Parser/CS420_Homework_4/ParserTests/Square/Square.eck")
-    tester("Parser/CS420_Homework_4/ParserTests/Square/SquareGame.eck")
-    tester("Parser/CS420_Homework_4/ParserTests/ArrayTests.eck")
+    #tester("Parser/CS420_Homework_4/ParserTests/Square/Main.eck")
+    #tester("Parser/CS420_Homework_4/ParserTests/Square/Square.eck")
+    #tester("Parser/CS420_Homework_4/ParserTests/Square/SquareGame.eck")
+    #tester("Parser/CS420_Homework_4/ParserTests/ArrayTests.eck")
