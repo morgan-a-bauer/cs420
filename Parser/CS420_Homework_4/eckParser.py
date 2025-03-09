@@ -197,10 +197,16 @@ class Parser:
             return PIR_ExpressionConstant(self.lineNumber, Lexeme.STRING_CONST,
                                           self.token[1])
         elif self.match(Lexeme.IDENTIFIER):
+            ident = self.token[1]
             lk = self.lookaheadToken()[0]
             if lk == Lexeme.SYMBOL_OPEN_BRACKET:
-                expr = self.pExpression()
+                expr = self.pExp4Id()
                 return PIR_ExpressionVariable(self.lineNumber, self.token[1], expr)
+            elif lk == Lexeme.SYMBOL_DOT:
+                name, params = self.pExp4Id()
+                return PIR_SubroutineCall(self.lineNumber, ident, name, params)
+            elif lk == Lexeme.SYMBOL_OPEN_PAREN:
+                params = self.pExp4Id()
         elif self.match(Lexeme.SYMBOL_OPEN_PAREN):
             expr = self.pExpression()
             self.matchNext(Lexeme.SYMBOL_CLOSE_PAREN, "Expected a ')'")
@@ -211,7 +217,10 @@ class Parser:
     def pExp4Id(self):
         """<exp4Id> →  [ <expression> ] | . <subroutineName><actualParameters> |
            <actualParameters> | epsilon"""
-        if self.matchNext(Lexeme.SYMBOL_OPEN_BRACKET):
+        if self.lookaheadToken()[0] == Lexeme.SYMBOL_OPEN_PAREN:
+            params = self.pActualParams()
+            return params
+        elif self.matchNext(Lexeme.SYMBOL_OPEN_BRACKET):
             expr = self.pExpression()
             self.matchNext(Lexeme.SYMBOL_CLOSE_BRACKET, "Expected a ']'")
             return expr
@@ -219,6 +228,7 @@ class Parser:
             subName = self.pSubroutineName()
             params = self.pActualParameters()
             return subName, params
+
 
     def pFormalParameters(self):
         """<formalParameters> →  <parameterList> | epsilon"""
