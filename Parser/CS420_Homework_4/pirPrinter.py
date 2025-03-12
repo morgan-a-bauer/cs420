@@ -42,11 +42,9 @@ class PIR_Printer:
         nextIndent = " " * nextIndentation
         self.__ioStream.write(
             f"{arg.lineNumber:3d}{indent}assignment {arg.variable}\n")
-        print(f"{arg.lineNumber:3d}{indent}assignment {arg.variable}\n") ###
         if arg.arrayExpression is not None:
             self.__ioStream.write(
                 f"{arg.lineNumber:3d}{nextIndent}array index\n")
-            print(f"{arg.lineNumber:3d}{nextIndent}array index\n") ###
             self.printNode(arg.arrayExpression,
                            nextIndentation + PIR_Printer.INDENTATION_INCR)
         self.printNode(arg.expression, nextIndentation)
@@ -86,6 +84,7 @@ class PIR_Printer:
         indent = " " * indentation
         nextIndentation = indentation + PIR_Printer.INDENTATION_INCR
         self.__ioStream.write(f"{arg.lineNumber:3d}{indent}exprUnop {arg.operator}\n")
+        print(f"{arg.lineNumber:3d}{indent}exprUnop {arg.operator}\n")
         self.printNode(arg.expression, nextIndentation)
 
     @printNode.register(PIR_ExpressionVariable)
@@ -112,6 +111,7 @@ class PIR_Printer:
             self.printNode(s, indentation + 2*PIR_Printer.INDENTATION_INCR)
         if arg.elseBranch is not None:
             self.__ioStream.write(f"{arg.lineNumber:3d}{nextIndent}else\n")
+            print(f"{arg.lineNumber:3d}{nextIndent}else\n")
             for s in arg.elseBranch:
                 self.printNode(s, indentation + 2*PIR_Printer.INDENTATION_INCR)
 

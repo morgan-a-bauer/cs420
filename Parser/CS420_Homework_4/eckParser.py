@@ -125,8 +125,8 @@ class Parser:
         self.matchNext(Lexeme.SYMBOL_OPEN_PAREN, "Expected a '('")
         lk = self.lookaheadToken()[0]
         if lk == Lexeme.SYMBOL_CLOSE_PAREN:
-            #TODO: empty list?
-            return None
+            self.nextToken()
+            return []
         exprList = self.pExpressionList()
         self.matchNext(Lexeme.SYMBOL_CLOSE_PAREN, "Expected a ')'")
         return exprList
@@ -152,7 +152,7 @@ class Parser:
             self.matchNext(Lexeme.SYMBOL_OPEN_BRACE, "Expected a '{'")
             pirVars = self.pClassVarDecs()
             pirSubs = self.pSubroutineDecs()
-            self.match(Lexeme.SYMBOL_CLOSE_BRACE, "Expected a '}'")
+            self.matchNext(Lexeme.SYMBOL_CLOSE_BRACE, "Expected a '}'")
             # create the AST node for a class
             pirClass = PIR_Class(line, name, pirVars, pirSubs)
             return pirClass
@@ -162,9 +162,11 @@ class Parser:
         scope = self.pClassVarModifier()
         typ = self.pType()
         names = self.pVarList()
+        self.matchNext(Lexeme.SYMBOL_SEMICOLON, "Expected a ';'")
         line = self.lineNumber
         pirVars = []
         for name in names:
+            self.__lineNumber = self.__scanner.getLineNumber()
             pirVarDec = PIR_VariableDeclaration(line, typ, name, scope)
             pirVars.append(pirVarDec)
         return pirVars
@@ -187,13 +189,15 @@ class Parser:
         #TODO: Add error
         name = self.matchNext(Lexeme.IDENTIFIER)
         scope = None
-        lk = self.lookaheadToken[0]
+        lk = self.lookaheadToken()[0]
         if lk == Lexeme.SYMBOL_DOT:
             scope = name
             name = self.pDoStatement1()
         params = self.pActualParameters()
+        self.__lineNumber = self.__scanner.getLineNumber()
         sub_call = PIR_SubroutineCall(self.lineNumber, scope, name, params)
         self.matchNext(Lexeme.SYMBOL_SEMICOLON, "Expected a ';'")
+        self.__lineNumber = self.__scanner.getLineNumber()
         return PIR_DoStatement(self.lineNumber, sub_call)
 
     def pDoStatement1(self):
@@ -205,6 +209,7 @@ class Parser:
 
     def pElseStatement(self):
         """<elseStatement> →  else { <statements } | epsilon"""
+        self.nextToken()
         self.matchNext(Lexeme.SYMBOL_OPEN_BRACE, "Expected a '{'")
         stmts = self.pStatements()
         self.matchNext(Lexeme.SYMBOL_CLOSE_BRACE, "Expected a '}'")
@@ -213,9 +218,12 @@ class Parser:
     def pExpression(self):
         """<expression> →  <exp1><expression'>"""
         operand1 = self.pExp1()
-        op, operand2 = self.pExpressionp()
-        if op == None:
+        if self.__lookahead is not None and (self.__lookahead[0][0] == Lexeme.SYMBOL_SEMICOLON or\
+                                             self.__lookahead[0][0] == Lexeme.SYMBOL_CLOSE_PAREN or\
+                                             self.__lookahead[0][0] == Lexeme.SYMBOL_CLOSE_BRACKET):
             return operand1
+        op, operand2 = self.pExpressionp()
+        self.__lineNumber = self.__scanner.getLineNumber()
         return PIR_ExpressionBinop(self.lineNumber, op, operand1, operand2)
 
     def pExpressionList(self):
@@ -255,7 +263,14 @@ class Parser:
     def pExp1(self):
         """<exp1> →  <exp2><exp1'>"""
         operand1 = self.pExp2()
+        if self.__lookahead[0][0] in [Lexeme.SYMBOL_SEMICOLON, Lexeme.SYMBOL_CLOSE_BRACKET,
+                        Lexeme.SYMBOL_CLOSE_PAREN, Lexeme.SYMBOL_COMMA,
+                        Lexeme.SYMBOL_AND, Lexeme.SYMBOL_OR]:
+            return operand1
         op, operand2 = self.pExp1p()
+        if op is None:
+            return None, None
+        self.__lineNumber = self.__scanner.getLineNumber()
         return PIR_ExpressionBinop(self.lineNumber, op, operand1, operand2)
 
     def pExp1p(self):
@@ -272,11 +287,22 @@ class Parser:
             op = Lexeme.SYMBOL_EQUAL
             operand2 = self.pExp2()
             return op, operand2
+        elif self.match(Lexeme.SYMBOL_SEMICOLON):
+            return None, 'a'
 
     def pExp2(self):
         """<exp2> →  <exp3><exp2'>"""
         operand1 = self.pExp3()
+        if self.__lookahead[0][0] in [Lexeme.SYMBOL_SEMICOLON, Lexeme.SYMBOL_CLOSE_BRACKET,
+                        Lexeme.SYMBOL_CLOSE_PAREN, Lexeme.SYMBOL_COMMA,
+                        Lexeme.SYMBOL_LT, Lexeme.SYMBOL_GT,
+                        Lexeme.SYMBOL_EQUAL, Lexeme.SYMBOL_AND,
+                        Lexeme.SYMBOL_OR]:
+            return operand1
         op, operand2 = self.pExp2p()
+        if op is None:
+            return operand1
+        self.__lineNumber = self.__scanner.getLineNumber()
         return PIR_ExpressionBinop(self.lineNumber, op, operand1, operand2)
 
     def pExp2p(self):
@@ -289,11 +315,23 @@ class Parser:
             op = Lexeme.SYMBOL_MINUS
             operand2 = self.pExp2()
             return op, operand2
+        elif self.match(Lexeme.SYMBOL_SEMICOLON):
+            return None, None
 
     def pExp3(self):
         """<exp3> →  <exp4><exp3'>"""
         operand1 = self.pExp4()
+        if self.__lookahead[0][0] in [Lexeme.SYMBOL_SEMICOLON, Lexeme.SYMBOL_CLOSE_BRACKET,
+                        Lexeme.SYMBOL_CLOSE_PAREN, Lexeme.SYMBOL_COMMA,
+                        Lexeme.SYMBOL_PLUS, Lexeme.SYMBOL_MINUS,
+                        Lexeme.SYMBOL_LT, Lexeme.SYMBOL_GT,
+                        Lexeme.SYMBOL_EQUAL, Lexeme.SYMBOL_AND,
+                        Lexeme.SYMBOL_OR]:
+            return operand1
         op, operand2 = self.pExp3p()
+        if op is None:
+            return None, None
+        self.__lineNumber = self.__scanner.getLineNumber()
         return PIR_ExpressionBinop(self.lineNumber, op, operand1, operand2)
 
     def pExp3p(self):
@@ -306,6 +344,8 @@ class Parser:
             op = Lexeme.SYMBOL_DIVIDE
             operand2 = self.pExp3()
             return op, operand2
+        elif self.match(Lexeme.SYMBOL_SEMICOLON):
+            return None, None
 
     def pExp4(self):
         """<exp4> →  - <exp4> | ~ <exp4> | integerConstant | stringConstant |
@@ -315,14 +355,17 @@ class Parser:
         if self.matchNext(Lexeme.SYMBOL_MINUS):
             op = Lexeme.SYMBOL_MINUS
             expr = self.pExp4()
+            self.__lineNumber = self.__scanner.getLineNumber()
             return PIR_ExpressionUnop(self.lineNumber, op, expr)
         elif self.match(Lexeme.SYMBOL_NEGATE):
             op = Lexeme.SYMBOL_NEGATE
             expr = self.pExp4()
         elif self.match(Lexeme.INTEGER_CONST):
+            self.__lineNumber = self.__scanner.getLineNumber()
             return PIR_ExpressionConstant(self.lineNumber, Lexeme.INTEGER_CONST,
                                           self.token[1])
         elif self.match(Lexeme.STRING_CONST):
+            self.__lineNumber = self.__scanner.getLineNumber()
             return PIR_ExpressionConstant(self.lineNumber, Lexeme.STRING_CONST,
                                           self.token[1])
         elif self.match(Lexeme.IDENTIFIER):
@@ -330,12 +373,25 @@ class Parser:
             lk = self.lookaheadToken()[0]
             if lk == Lexeme.SYMBOL_OPEN_BRACKET:
                 expr = self.pExp4Id()
-                return PIR_ExpressionVariable(self.lineNumber, self.token[1], expr)
+                self.__lineNumber = self.__scanner.getLineNumber()
+                return PIR_ExpressionVariable(self.lineNumber, ident, expr)
             elif lk == Lexeme.SYMBOL_DOT:
                 name, params = self.pExp4Id()
+                self.__lineNumber = self.__scanner.getLineNumber()
                 return PIR_SubroutineCall(self.lineNumber, ident, name, params)
             elif lk == Lexeme.SYMBOL_OPEN_PAREN:
                 params = self.pExp4Id()
+                self.__lineNumber = self.__scanner.getLineNumber()
+                return PIR_SubroutineCall(self.lineNumber, None, ident, params)
+            elif lk in [Lexeme.SYMBOL_SEMICOLON, Lexeme.SYMBOL_CLOSE_BRACKET,
+                        Lexeme.SYMBOL_CLOSE_PAREN, Lexeme.SYMBOL_COMMA,
+                        Lexeme.SYMBOL_TIMES, Lexeme.SYMBOL_DIVIDE,
+                        Lexeme.SYMBOL_PLUS, Lexeme.SYMBOL_MINUS,
+                        Lexeme.SYMBOL_LT, Lexeme.SYMBOL_GT,
+                        Lexeme.SYMBOL_EQUAL, Lexeme.SYMBOL_AND,
+                        Lexeme.SYMBOL_OR]:
+                self.__lineNumber = self.__scanner.getLineNumber()
+                return PIR_ExpressionVariable(self.lineNumber, ident, None)
         else:
             return self.pKeywordConstant()
 
@@ -357,20 +413,23 @@ class Parser:
     def pFormalParameters(self):
         """<formalParameters> →  <parameterList> | epsilon"""
         if self.lookaheadToken()[0] == Lexeme.SYMBOL_CLOSE_PAREN:
-            self.nextToken()
             return []
         return self.pParameterList()
 
     def pKeywordConstant(self):
         """<keywordConstant> →  true | false | null | this"""
         if self.matchNext(Lexeme.KW_TRUE):
+            self.__lineNumber = self.__scanner.getLineNumber()
             return PIR_ExpressionConstant(self.lineNumber, (DataTypes.BOOLEAN_SCALAR, None), Lexeme.KW_TRUE)
         elif self.matchNext(Lexeme.KW_FALSE):
+            self.__lineNumber = self.__scanner.getLineNumber()
             return PIR_ExpressionConstant(self.lineNumber, (DataTypes.BOOLEAN_SCALAR, None), Lexeme.KW_FALSE)
         elif self.matchNext(Lexeme.KW_NULL):
+            self.__lineNumber = self.__scanner.getLineNumber()
             return PIR_ExpressionConstant(self.lineNumber, (DataTypes.VOID, None), None)
         elif self.matchNext(Lexeme.KW_THIS):
-            return PIR_ExpressionConstant(self.lineNumber, (DataTypes.CLASS_SCALAR, "String"), Lexeme.KW_THIS)
+            self.__lineNumber = self.__scanner.getLineNumber()
+            return PIR_ExpressionConstant(self.lineNumber, (DataTypes.CLASS_SCALAR, None), Lexeme.KW_THIS)
 
     def pIfStatement(self):
         """<ifStatement> →  if ( <expression> ) { <statements> } <elseStatement>"""
@@ -384,7 +443,9 @@ class Parser:
         self.matchNext(Lexeme.SYMBOL_CLOSE_BRACE, "Expected a '}'")
         if self.lookaheadToken()[0] == Lexeme.KW_ELSE:
             else_stmt = self.pElseStatement()
+            self.__lineNumber = self.__scanner.getLineNumber()
             return PIR_IfStatement(self.lineNumber, expr, stmts)
+        self.__lineNumber = self.__scanner.getLineNumber()
         return PIR_IfStatement(self.lineNumber, expr, stmts)
 
     def pParameterList(self):
@@ -392,6 +453,7 @@ class Parser:
         params = []
         typ = self.pType()
         name = self.pVarName()
+        self.__lineNumber = self.__scanner.getLineNumber()
         pirVarDec = PIR_VariableDeclaration(self.lineNumber, typ, name,
                                             VariableScopes.PARAMETER)
         params.append(pirVarDec)
@@ -401,18 +463,22 @@ class Parser:
     def pParameterList1(self):
         """<parameterList1> →  <parameterList> | epsilon"""
         if self.lookaheadToken()[0] == Lexeme.SYMBOL_CLOSE_PAREN:
+            self.nextToken()
             return []
         self.matchNext(Lexeme.SYMBOL_COMMA, "Expected a ','")
         return self.pParameterList()
 
     def pReturnStatement(self):
         """<returnStatement> →  return <returnStatement1> ;"""
-        self.nectToken()
+        self.nextToken()
         lk = self.lookaheadToken()[0]
         if lk == Lexeme.SYMBOL_SEMICOLON:
+            self.nextToken()
+            self.__lineNumber = self.__scanner.getLineNumber()
             return PIR_ReturnStatement(self.lineNumber)
         expr = self.pReturnStatement1()
         self.matchNext(Lexeme.SYMBOL_SEMICOLON, "Expected a ';'")
+        self.__lineNumber = self.__scanner.getLineNumber()
         return PIR_ReturnStatement(self.lineNumber, expr)
 
     def pReturnStatement1(self):
@@ -420,26 +486,11 @@ class Parser:
         expr = self.pExpression()
         return expr
 
-    def pSubroutineBody(self):
-        """<subroutineBody> →  <varDec>*<statements>"""
-        #TODO: if no variables
-        while self.lookaheadToken()[0] != Lexeme.SYMBOL_SEMICOLON:
-            typ, names = self.pVarDec()
-            vars = []
-            for name in names:
-                var = PIR_VariableDeclaration(self.lineNumber, typ, name,
-                                              VariableScopes.LOCAL)
-                vars.append(var)
-            body = vars
-        body = body + self.pStatements()
-
-        return body
-
     def pStatement(self):
         """<statement> →  <assignmentStatement> | <ifStatement> |
                           <whileStatement> | <doStatement> |
                           <returnStatement>"""
-        lk = self.lookaheadToken()[0]
+        lk = self.lookaheadToken()[0] if self.__lookahead is None else self.__lookahead[0][0]
         if lk == Lexeme.KW_IF:
             statement = self.pIfStatement()
         elif lk == Lexeme.KW_WHILE:
@@ -455,12 +506,37 @@ class Parser:
     def pStatements(self):
         """<statements> →  <statement>*"""
         statements = []
-        while self.lookaheadToken()[0] != Lexeme.SYMBOL_CLOSE_BRACE:
+        lk = self.lookaheadToken()[0] if self.__lookahead is None else self.__lookahead[0][0]
+        while lk != Lexeme.SYMBOL_CLOSE_BRACE:
             statement = self.pStatement()
             statements.append(statement)
+            lk = self.lookaheadToken()[0] if self.__lookahead is None else self.__lookahead[0][0]
         return statements
 
-    def pSubroutineDecs(self):
+    def pSubroutineBody(self):
+        """<subroutineBody> →  <varDec>*<statements>"""
+        #TODO: if no variables
+        vars = []
+        stmts = []
+        lk = self.lookaheadToken()[0]
+        while lk == Lexeme.KW_INT or lk == Lexeme.KW_CHAR or lk == Lexeme.KW_BOOLEAN or\
+              lk ==Lexeme.IDENTIFIER:
+            typ, names = self.pVarDec()
+            if names is None:
+                stmts.append(typ)
+                break
+            for name in names:
+                self.__lineNumber = self.__scanner.getLineNumber()
+                var = PIR_VariableDeclaration(self.lineNumber, typ, name,
+                                              VariableScopes.LOCAL)
+                vars.append(var)
+            lk = self.lookaheadToken()[0]
+        stmts = stmts + self.pStatements()
+
+        self.__lineNumber = self.__scanner.getLineNumber()
+        return PIR_SubroutineBody(self.lineNumber, vars, stmts)
+
+    def pSubroutineDec(self):
         """
         <subroutineDec> →  <subroutineSpecifier>  <subroutineType>
                 <subroutineName>  (<formalParameters>) { <subroutineBody> }
@@ -469,17 +545,30 @@ class Parser:
         typ = self.pSubroutineType()
         name = self.pSubroutineName()
         # parse parameter list
-        self.matchNext(Lexeme.SYMBOL_CLOSE_PAREN, "Expected a '('")
+        self.matchNext(Lexeme.SYMBOL_OPEN_PAREN, "Expected a '('")
         formal_params = self.pFormalParameters()
+        self.matchNext(Lexeme.SYMBOL_CLOSE_PAREN, "Expected a ')'")
         # parse body of a subroutine
         self.matchNext(Lexeme.SYMBOL_OPEN_BRACE, "Expected a '{'")
         body = self.pSubroutineBody()
+        self.matchNext(Lexeme.SYMBOL_CLOSE_BRACE, "Expected a '}'")
+        self.__lineNumber = self.__scanner.getLineNumber()
+        return PIR_SubroutineDeclaration(self.lineNumber, spec, typ, name,
+                                         formal_params, body)
+
+    def pSubroutineDecs(self):
+        """<subroutineDec>*"""
+        subroutines = []
+        while self.lookaheadToken()[0] != Lexeme.SYMBOL_CLOSE_BRACE:
+            sub = self.pSubroutineDec()
+            subroutines.append(sub)
+        return subroutines
 
     def pSubroutineName(self):
         """<subroutineName> →  identifier"""
         #TODO: Error message
         name = self.matchNext(Lexeme.IDENTIFIER, "")
-        return name
+        return self.token[1]
 
     def pSubroutineSpecifier(self):
         """<subroutineSpecifier> →  constructor | function | method"""
@@ -494,31 +583,31 @@ class Parser:
         """<subroutineType> →  void | <type>"""
         if self.lookaheadToken()[0] == (Lexeme.KW_VOID):
             self.nextToken()
-            return DataTypes.VOID
+            return (DataTypes.VOID, None)
         return self.pType
 
     def pType(self):
         """<type> →  int | char | boolean | int[] | char[] | boolean[] | <className>"""
         if self.matchNext(Lexeme.IDENTIFIER):
-            return self.token[1]
+            return (DataTypes.CLASS_SCALAR, None)
         elif self.match(Lexeme.KW_INT):
             if self.lookaheadToken()[0] == Lexeme.SYMBOL_OPEN_BRACE:
                 self.nextToken()
                 self.nextToken()
-                return DataTypes.INT_ARRAY
-            return DataTypes.INT_SCALAR
+                return (DataTypes.INT_ARRAY, None)
+            return (DataTypes.INT_SCALAR, None)
         elif self.match(Lexeme.KW_CHAR):
             if self.lookaheadToken()[0] == Lexeme.SYMBOL_OPEN_BRACE:
                 self.nextToken()
                 self.nextToken()
-                return DataTypes.CHAR_ARRAY
-            return DataTypes.CHAR_SCALAR
+                return (DataTypes.CHAR_ARRAY, None)
+            return (DataTypes.CHAR_SCALAR, None)
         elif self.match(Lexeme.KW_BOOLEAN):
             if self.lookaheadToken()[0] == Lexeme.SYMBOL_OPEN_BRACE:
                 self.nextToken()
                 self.nextToken()
-                return DataTypes.BOOLEAN_ARRAY
-            return DataTypes.BOOLEAN_SCALAR
+                return (DataTypes.BOOLEAN_ARRAY, None)
+            return (DataTypes.BOOLEAN_SCALAR, None)
 
     def pVarArray(self):
         """<varArray> →  [ <expression> ] | epsilon"""
@@ -532,7 +621,24 @@ class Parser:
     def pVarDec(self):
         """<varDec> →  <type><varList>"""
         typ = self.pType()
+        lk = self.lookaheadToken()[0] if self.__lookahead is None else self.__lookahead[0][0]
+        if lk == Lexeme.SYMBOL_EQUAL:
+            variable = typ
+            self.matchNext(Lexeme.SYMBOL_EQUAL)
+            expr = self.pExpression()
+            self.matchNext(Lexeme.SYMBOL_SEMICOLON, "Expected a ';'")
+            self.__lineNumber = self.__scanner.getLineNumber()
+            return PIR_AssignmentStatement(self.lineNumber, variable, None, expr), None
+        elif lk == Lexeme.SYMBOL_OPEN_BRACE:
+            self.nextToken()
+            array_expr = self.pVarArray()
+            self.matchNext(Lexeme.SYMBOL_EQUAL, "Expected a '='")
+            expr = self.pExpression()
+            self.matchNext(Lexeme.SYMBOL_SEMICOLON, "Expected a ';'")
+            self.__lineNumber = self.__scanner.getLineNumber()
+            return PIR_AssignmentStatement(self.lineNumber, variable, array_expr, expr), None
         varNames = self.pVarList()
+        self.matchNext(Lexeme.SYMBOL_SEMICOLON, "Expected a ';'")
         return typ, varNames
 
     def pVarList(self):
@@ -568,6 +674,7 @@ class Parser:
         self.matchNext(Lexeme.SYMBOL_OPEN_BRACE, "Expected a '{'")
         stmts = self.pStatements()
         self.matchNext(Lexeme.SYMBOL_CLOSE_BRACE, "Expected a '}'")
+        self.__lineNumber = self.__scanner.getLineNumber()
         return PIR_WhileStatement(self.lineNumber, expr, stmts)
 
 if __name__ == "__main__":

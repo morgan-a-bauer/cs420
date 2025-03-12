@@ -1,0 +1,29 @@
+  3class Main
+  4   variable VariableScopes.STATIC DataTypes.BOOLEAN_SCALAR test
+ 14   subroutine SubroutineSpecifiers.FUNCTION DataTypes.VOID main
+  9      variable VariableScopes.LOCAL DataTypes.CLASS_SCALAR game
+ 10      assignment (<DataTypes.CLASS_SCALAR: 5>, None)
+ 10         expVar game
+ 11      do
+ 10         subroutineCall True.run
+ 12      do
+ 11         subroutineCall True.dispose
+ 13      return
+ 31   subroutine SubroutineSpecifiers.FUNCTION DataTypes.VOID test
+ 16      variable VariableScopes.LOCAL DataTypes.INT_SCALAR i
+ 16      variable VariableScopes.LOCAL DataTypes.INT_SCALAR j
+ 18      variable VariableScopes.LOCAL DataTypes.CLASS_SCALAR s
+ 19      variable VariableScopes.LOCAL DataTypes.CLASS_SCALAR a
+ 29      if
+ 29         condition
+ 19            expVar i
+ 29         then
+ 21            assignment True
+ 21               expVar i
+ 22            assignment True
+ 22               expVar j
+ 23            assignment True
+ 23               array index
+ 22                  expVar i
+ 23               expVar j
+ 30      return
