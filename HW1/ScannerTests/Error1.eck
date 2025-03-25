@@ -1,0 +1,26 @@
+// This is a Eck scanner test file that
+// contains illegal characters
+
+class Main {
+
+    function void test() {
+         int i, j; 
+        \     // backslash is not a symbol in Eck        
+         String s;
+         Array a;
+        if (false) {
+            s = "% and \ are allowable in strings";
+            s = null;
+            a[1] = a[2] % 034;    
+            /* Two things to note about the line above: 
+                1) % is not a legal symbol in Eck.
+                2) 034 is not a valid integer constant because it has a leading zero.  The scanner
+                    should break this into two lexemes of category integer constants, 0 and 34.  The
+                    parser will then detect this as a syntax error in the Eck language.
+            */
+            
+        }
+        return;
+    }
+}
+

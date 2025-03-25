@@ -1,0 +1,11 @@
+// This is a Eck scanner test file that
+// ends in the middle of a multi-line comment
+
+class Main {
+
+    function void test() {
+        int i, j;     
+        String s;
+        Array a;
+        if (false) {
+            /* % and \ are allowable in 

@@ -187,7 +187,8 @@ class Parser:
         """<doStatement> →  do identifier <doStatement1><actualParameters>;"""
         self.nextToken()
         #TODO: Add error
-        name = self.matchNext(Lexeme.IDENTIFIER)
+        self.matchNext(Lexeme.IDENTIFIER)
+        name = self.token[1]
         scope = None
         lk = self.lookaheadToken()[0]
         if lk == Lexeme.SYMBOL_DOT:
@@ -444,7 +445,7 @@ class Parser:
         if self.lookaheadToken()[0] == Lexeme.KW_ELSE:
             else_stmt = self.pElseStatement()
             self.__lineNumber = self.__scanner.getLineNumber()
-            return PIR_IfStatement(self.lineNumber, expr, stmts)
+            return PIR_IfStatement(self.lineNumber, expr, stmts, else_stmt)
         self.__lineNumber = self.__scanner.getLineNumber()
         return PIR_IfStatement(self.lineNumber, expr, stmts)
 
@@ -567,7 +568,7 @@ class Parser:
     def pSubroutineName(self):
         """<subroutineName> →  identifier"""
         #TODO: Error message
-        name = self.matchNext(Lexeme.IDENTIFIER, "")
+        self.matchNext(Lexeme.IDENTIFIER, "")
         return self.token[1]
 
     def pSubroutineSpecifier(self):
@@ -623,12 +624,12 @@ class Parser:
         typ = self.pType()
         lk = self.lookaheadToken()[0] if self.__lookahead is None else self.__lookahead[0][0]
         if lk == Lexeme.SYMBOL_EQUAL:
-            variable = typ
+            name = self.token[1]
             self.matchNext(Lexeme.SYMBOL_EQUAL)
             expr = self.pExpression()
             self.matchNext(Lexeme.SYMBOL_SEMICOLON, "Expected a ';'")
             self.__lineNumber = self.__scanner.getLineNumber()
-            return PIR_AssignmentStatement(self.lineNumber, variable, None, expr), None
+            return PIR_AssignmentStatement(self.lineNumber, name, None, expr), None
         elif lk == Lexeme.SYMBOL_OPEN_BRACE:
             self.nextToken()
             array_expr = self.pVarArray()
@@ -661,8 +662,8 @@ class Parser:
     def pVarName(self):
         """<varName> →  identifier"""
         #TODO: err message
-        name = self.matchNext(Lexeme.IDENTIFIER, "")
-        return name
+        self.matchNext(Lexeme.IDENTIFIER, "")
+        return self.token[1]
 
     def pWhileStatement(self):
         """<whileStatement> →  while ( <expression> ) { <statements> }"""
@@ -694,7 +695,6 @@ if __name__ == "__main__":
         # create the output file names
         root, _ = os.path.splitext(filename)
         parserOutfile = root + ".parse"
-        print(parserOutfile)
         answerFilename = root + ".answer"
 
         # parse the file
